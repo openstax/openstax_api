@@ -121,9 +121,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  capybara
-  factory_girl_rails
+  capybara (~> 2.2)
+  factory_girl_rails (~> 4.4)
   jquery-rails
   openstax_api!
-  rspec-rails
-  sqlite3
+  rspec-rails (~> 2.14)
+  sqlite3 (~> 1.3)
