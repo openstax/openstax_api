@@ -1,4 +1,4 @@
-openstax_access
-===============
+openstax_api
+============
 
-API and Access Policy utilities
+API utilities for OpenStax products and tools.
