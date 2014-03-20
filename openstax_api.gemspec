@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email       = ['dms3@rice.edu']
   s.homepage    = 'https://github.com/openstax/openstax_api'
   s.summary     = 'API utilities for OpenStax products and tools.'
-  s.description = 'Provides models, controllers and libraries that help OpenStax products define API's for user applications.'
+  s.description = "Provides models, controllers and libraries that help OpenStax products define API's for user applications."
 
   s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['spec/**/*']
