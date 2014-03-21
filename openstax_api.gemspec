@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name        = 'openstax_api'
   s.version     = OpenstaxApi::VERSION
   s.licenses    = ['MIT']
-  s.authors     = ['Dante Soares']
+  s.authors     = ['Dante Soares', 'JP Slavinsky']
   s.email       = ['dms3@rice.edu']
   s.homepage    = 'https://github.com/openstax/openstax_api'
   s.summary     = 'API utilities for OpenStax products and tools.'
@@ -18,6 +18,11 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*']
 
   s.add_dependency 'rails', '~> 3.2'
+  s.add_dependency 'roar', '~> 0.12'
+  s.add_dependency 'roar-rails', '~> 0.1'
+  s.add_dependency 'doorkeeper', '~> 0.6'
+  s.add_dependency 'apipie-rails', '~> 0.1'
+  s.add_dependency 'maruku', '~> 0.7'
 
   s.add_development_dependency 'sqlite3', '~> 1.3'
   s.add_development_dependency 'rspec-rails', '~> 2.14'

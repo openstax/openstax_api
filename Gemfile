@@ -13,5 +13,7 @@ gem "jquery-rails"
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 
+gem 'representable', :git => 'git://github.com/jpslav/representable.git', :ref => '0b8ba7a2e7a6ce0bc404fe5af9ead26295db1457'
+
 # To use debugger
 # gem 'debugger'
