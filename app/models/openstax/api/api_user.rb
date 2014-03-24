@@ -54,7 +54,7 @@ module OpenStax
       ##########################
 
       def can_do?(action, resource)
-        Utilities::AccessPolicy.action_allowed?(action, self, resource)
+        OpenStax::Utilities::AccessPolicy.action_allowed?(action, self, resource)
       end
 
       def can_read?(resource)

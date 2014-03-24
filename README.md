@@ -1,9 +1,8 @@
-openstax_api
-============
+# openstax_api
 
 API utilities for OpenStax products and tools.
 
-# Installation
+## Installation
 
 Add this line to your application's Gemfile:
 
@@ -17,26 +16,31 @@ And then execute:
 $ bundle
 ```
 
-# Included classes
+## Included classes
 
 This gem includes the following classes, all under the OpenStax::Api namespace:
 
-## Controllers
+### Controllers
 
-ApiController
-OauthBasedApiController
+`ApiController`
 
-## Models
+`OauthBasedApiController`
 
-ApiUser
+Your API controllers should inherit from those classes.
 
-# Doorkeeper Extensions
+### Models
+
+`ApiUser`
+
+This is the class of someone using the API, which can either be a (signed in) user, a doorkeeper application, or a combination of both.
+
+## Doorkeeper Extensions
 
 This gem also adds the following methods to Doorkeeper::Application:
 
 `is_human?`, `is_application?` and `is_admin?`
 
-# Route simplification
+## Route simplification
 
 Finally, this gem allows API routes to be simplified by using the api method, like so:
 
@@ -53,11 +57,11 @@ end
 The api route method takes a version argument and a boolean.
 If the boolean is true, that version is the default (latest) and will always match the Accept header. It should be defined last, as any API route after that will be ignored.
 
-# Testing
+## Testing
 
-From the gem's main folder, run `bundle install`, `bundle exec rake db:migrate` and then `bundle exec rake` to run all the specs.
+From the gem's main folder, run `bundle`, and then `rake` to run all the specs.
 
-# Contributing
+## Contributing
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
