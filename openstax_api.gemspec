@@ -9,12 +9,12 @@ Gem::Specification.new do |s|
   s.version     = OpenStax::Api::VERSION
   s.licenses    = ['MIT']
   s.authors     = ['Dante Soares', 'JP Slavinsky']
-  s.email       = ['dms3@rice.edu']
+  s.email       = ['dms3@rice.edu', 'jps@kindlinglabs.com']
   s.homepage    = 'https://github.com/openstax/openstax_api'
   s.summary     = 'API utilities for OpenStax products and tools.'
   s.description = "Provides models, controllers and libraries that help OpenStax products define API's for user applications."
 
-  s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{app,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['spec/**/*']
 
   s.add_dependency 'rails', '>= 3.1'
