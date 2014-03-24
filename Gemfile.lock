@@ -11,12 +11,10 @@ PATH
   remote: .
   specs:
     openstax_api (0.0.1)
-      apipie-rails (~> 0.1)
-      doorkeeper (~> 0.6)
-      maruku (~> 0.7)
-      rails (~> 3.2)
-      roar (~> 0.12)
-      roar-rails (~> 0.1)
+      doorkeeper (>= 0.6)
+      rails (>= 3.1)
+      roar (>= 0.12)
+      roar-rails (>= 0.1)
 
 GEM
   remote: https://rubygems.org/
@@ -48,9 +46,6 @@ GEM
     activesupport (3.2.17)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
-    apipie-rails (0.1.2)
-      json
-      rails (>= 3.0.10)
     arel (3.0.3)
     builder (3.0.4)
     capybara (2.2.1)
@@ -80,7 +75,6 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    maruku (0.7.1)
     mime-types (1.25.1)
     mini_portile (0.5.2)
     multi_json (1.9.2)
