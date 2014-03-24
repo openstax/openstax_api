@@ -6,7 +6,7 @@ require 'openstax_api/version'
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = 'openstax_api'
-  s.version     = OpenstaxApi::VERSION
+  s.version     = OpenStax::Api::VERSION
   s.licenses    = ['MIT']
   s.authors     = ['Dante Soares', 'JP Slavinsky']
   s.email       = ['dms3@rice.edu']
@@ -17,12 +17,10 @@ Gem::Specification.new do |s|
   s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['spec/**/*']
 
-  s.add_dependency 'rails', '~> 3.2'
-  s.add_dependency 'roar', '~> 0.12'
-  s.add_dependency 'roar-rails', '~> 0.1'
-  s.add_dependency 'doorkeeper', '~> 0.6'
-  s.add_dependency 'apipie-rails', '~> 0.1'
-  s.add_dependency 'maruku', '~> 0.7'
+  s.add_dependency 'rails', '>= 3.1'
+  s.add_dependency 'roar', '>= 0.12'
+  s.add_dependency 'roar-rails', '>= 0.1'
+  s.add_dependency 'doorkeeper', '>= 0.6'
 
   s.add_development_dependency 'sqlite3', '~> 1.3'
   s.add_development_dependency 'rspec-rails', '~> 2.14'

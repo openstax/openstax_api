@@ -1,7 +1,9 @@
-require "openstax_api/engine"
+require 'openstax_api/engine'
+require 'openstax_api/doorkeeper_extensions'
+require 'openstax_api/representable_schema_printer'
+require 'openstax_api/routes'
 
-module OpenstaxApi
-  def main_app_name
-    Rails.application.class.to_s.split("::").first
+module OpenStax
+  module Api
   end
 end

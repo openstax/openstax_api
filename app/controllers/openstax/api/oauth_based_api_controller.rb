@@ -1,5 +1,5 @@
-module Api
-  module V1
+module OpenStax
+  module Api
     class OauthBasedApiController < ApiController      
 
       respond_to :json
