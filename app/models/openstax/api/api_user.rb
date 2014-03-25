@@ -28,7 +28,7 @@ module OpenStax
           @application_proc = lambda { doorkeeper_token.application }
           @user_proc = lambda {
             doorkeeper_token.resource_owner_id ? 
-              User.find(doorkeeper_token.resource_owner_id) : 
+              User.find(doorkeeper_token.resource_owner_id) :
               nil
           }
         else
@@ -54,7 +54,7 @@ module OpenStax
       ##########################
 
       def can_do?(action, resource)
-        OpenStax::Utilities::AccessPolicy.action_allowed?(action, self, resource)
+        OSU::AccessPolicy.action_allowed?(action, self, resource)
       end
 
       def can_read?(resource)

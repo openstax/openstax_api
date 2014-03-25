@@ -2,7 +2,7 @@ require 'openstax_api/constraints'
 
 module OpenStax
   module Api
-    module Routes
+    module RouteExtensions
       def api(version = :v1, default = false)
         constraints = Constraints.new(version: version, default: default)
         namespace :api, defaults: {format: 'json'} do
@@ -14,4 +14,4 @@ module OpenStax
   end
 end
 
-ActionDispatch::Routing::Mapper.send :include, OpenStax::Api::Routes
+ActionDispatch::Routing::Mapper.send :include, OpenStax::Api::RouteExtensions

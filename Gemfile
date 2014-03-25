@@ -14,6 +14,7 @@ gem "jquery-rails"
 # your gem to rubygems.org.
 
 gem 'representable', :git => 'git://github.com/jpslav/representable.git', :ref => '0b8ba7a2e7a6ce0bc404fe5af9ead26295db1457'
+gem 'doorkeeper'
 
 # To use debugger
 # gem 'debugger'

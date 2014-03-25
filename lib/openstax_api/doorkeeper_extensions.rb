@@ -1,9 +1,7 @@
-require 'doorkeeper/models/active_record/application'
-
 module OpenStax
   module Api
     module DoorkeeperExtensions
-      # Add some fields to Doorkeeper Application
+      # Add some fields to Doorkeeper::Application
       def is_human?
         false
       end
@@ -19,4 +17,6 @@ module OpenStax
   end
 end
 
-Doorkeeper::Application.send :include, OpenStax::Api::DoorkeeperExtensions
+OpenStax::Api::Engine.config.after_initialize do
+  Doorkeeper::Application.send :include, OpenStax::Api::DoorkeeperExtensions
+end
