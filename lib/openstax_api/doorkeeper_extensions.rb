@@ -17,6 +17,7 @@ module OpenStax
   end
 end
 
+# This needs to run after the orm is selected in the doorkeeper initializer
 OpenStax::Api::Engine.config.after_initialize do
   Doorkeeper::Application.send :include, OpenStax::Api::DoorkeeperExtensions
 end
