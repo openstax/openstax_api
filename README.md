@@ -59,7 +59,7 @@ If the boolean is true, that version is the default (latest) and will always mat
 
 ## Testing
 
-From the gem's main folder, run `bundle`, and then `rake` to run all the specs.
+From the gem's main folder, run `bundle`, `rake db:migrate` and then `rake` to run all the specs.
 
 ## Contributing
 
