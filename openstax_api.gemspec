@@ -1,7 +1,7 @@
 $:.push File.expand_path('../lib', __FILE__)
 
 # Maintain your gem's version:
-require 'openstax_api/version'
+require 'openstax/api/version'
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'roar-rails', '>= 0.1.2'
   s.add_dependency 'doorkeeper', '>= 0.5'
   s.add_dependency 'openstax_utilities', '>= 1.0.1'
+  s.add_dependency 'exception_notification', '>= 4.0'
 
   s.add_development_dependency 'sqlite3', '~> 1.3'
   s.add_development_dependency 'rspec-rails', '~> 2.14'

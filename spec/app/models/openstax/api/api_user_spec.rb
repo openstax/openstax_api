@@ -3,7 +3,7 @@ require 'spec_helper'
 module OpenStax
   module Api
     describe ApiUser do
-      let(:user) { User.create }
+      let(:user) { DummyUser.create }
       let(:application) { double('Doorkeeper::Application') }
       let(:doorkeeper_token) { double('Doorkeeper::AccessToken') }
       let(:non_doorkeeper_user_proc) { lambda { user } }

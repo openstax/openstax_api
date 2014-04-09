@@ -1,4 +1,4 @@
-require 'openstax_api/constraints'
+require 'openstax/api/constraints'
 
 module OpenStax
   module Api

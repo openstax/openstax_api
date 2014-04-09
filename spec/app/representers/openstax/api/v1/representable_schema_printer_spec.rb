@@ -5,7 +5,7 @@ module OpenStax
     module V1
       describe RepresentableSchemaPrinter do
         it 'must print model schemas' do
-          schema = RepresentableSchemaPrinter.json(UserRepresenter)
+          schema = RepresentableSchemaPrinter.json(DummyUserRepresenter)
           expect(schema).to include('Schema')
           expect(schema).to include('.schema')
           expect(schema).to include('------')

@@ -1,6 +1,6 @@
 require 'representable/json'
 
-module UserRepresenter
+module DummyUserRepresenter
   include Roar::Representer::JSON
   
   property :username

@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    openstax_api (0.1.0)
+    openstax_api (0.2.0)
       doorkeeper (>= 0.5)
+      exception_notification (>= 4.0)
       openstax_utilities (>= 1.0.1)
       rails (>= 3.1)
       roar (>= 0.12.1)
@@ -48,6 +49,9 @@ GEM
       railties (>= 3.1)
     eager_beaver (0.0.4)
     erubis (2.7.0)
+    exception_notification (4.0.1)
+      actionmailer (>= 3.0.4)
+      activesupport (>= 3.0.4)
     hike (1.2.3)
     i18n (0.6.9)
     journey (1.0.4)
@@ -63,8 +67,8 @@ GEM
     multi_json (1.9.2)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
-    openstax_utilities (2.0.0)
-      attribeautiful (~> 0.0.7)
+    openstax_utilities (2.1.0)
+      attribeautiful (>= 0.0.7)
       rails (>= 3.1)
     polyglot (0.3.4)
     rack (1.4.5)
@@ -95,7 +99,7 @@ GEM
     representable (1.7.7)
       multi_json
       nokogiri
-    roar (0.12.4)
+    roar (0.12.5)
       representable (>= 1.6.0)
     roar-rails (0.1.5)
       actionpack

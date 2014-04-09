@@ -1,6 +1,6 @@
-class CreateUsers < ActiveRecord::Migration
+class CreateDummyUsers < ActiveRecord::Migration
   def change
-    create_table :users do |t|
+    create_table :dummy_users do |t|
       t.string :username
       t.string :password_hash
 

@@ -11,6 +11,8 @@
 # This API class gives us a way to abstract out these cases and also
 # gives us accessors to get the Application and User objects, if available.
 
+require 'openstax_utilities'
+
 module OpenStax
   module Api
     class ApiUser
@@ -25,10 +27,11 @@ module OpenStax
         # procs that can get it for us.  This could save us some queries.
 
         if doorkeeper_token
+          user_class = OpenStax::Api.configuration.user_class_name.classify.constantize
           @application_proc = lambda { doorkeeper_token.application }
           @user_proc = lambda {
             doorkeeper_token.resource_owner_id ? 
-              User.find(doorkeeper_token.resource_owner_id) :
+              user_class.find(doorkeeper_token.resource_owner_id) :
               nil
           }
         else
@@ -37,9 +40,7 @@ module OpenStax
         end
       end
 
-      # Returns a Doorkeeper::Application or nil 
-      # TODO should we have a NoApplication like NoUser (or maybe should
-      # NoUser just be replaced with nil)
+      # Returns a Doorkeeper::Application or nil
       def application
         @application ||= @application_proc.call
       end
