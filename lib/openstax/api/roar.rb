@@ -33,8 +33,8 @@ module OpenStax
         end
       end
 
-      def standard_create(model_klass, represent_with=nil)
-        standard_nested_create(model_klass, nil, nil, represent_with)
+      def standard_create(model_klass, represent_with=nil, &block)
+        standard_nested_create(model_klass, nil, nil, represent_with, &block)
       end
 
       def standard_nested_create(model_klass, container_association=nil, container_id=nil, represent_with=nil)
