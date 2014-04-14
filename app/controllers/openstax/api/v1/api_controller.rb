@@ -20,25 +20,35 @@ module OpenStax
         skip_protect_beta if respond_to? :skip_protect_beta
 
         skip_before_filter :authenticate_user!
+        doorkeeper_for :all, :unless => :application_user_without_token?
+        skip_before_filter :verify_authenticity_token,
+                           :unless => :application_user_without_token?
 
         respond_to :json
         rescue_from Exception, :with => :rescue_from_exception
+
+        # Keep old current_user method so we can use it
+        alias_method :current_application_user, :current_user
 
         # TODO: doorkeeper users (or rather users who have doorkeeper
         # applications) need to agree to API terms of use (need to have agreed
         # to it at one time, can't require them to agree when terms change since
         # their apps are doing the talking) -- this needs more thought
 
+        # TODO: maybe freak out if current user is anonymous (require we know
+        # who person/app is so we can do things like throttling, API terms
+        # agreement, etc)
+
+        # Always return an ApiUser
         def current_user
-          @current_user ||= doorkeeper_token ? 
-                            User.find(doorkeeper_token.resource_owner_id) : 
-                            super
-          # TODO: maybe freak out if current user is anonymous (require we know
-          # who person/app is so we can do things like throttling, API terms
-          # agreement, etc)
+          @current_api_user ||= ApiUser.new(doorkeeper_token, lambda { super })
         end
 
       protected
+
+        def application_user_without_token?
+          current_application_user && doorkeeper_token.blank?
+        end
 
         def rescue_from_exception(exception)
           # See https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L453 for error names/symbols
