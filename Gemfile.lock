@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    openstax_api (0.2.1)
+    openstax_api (1.0.0)
       doorkeeper (>= 0.5)
       exception_notification (>= 4.0)
       openstax_utilities (>= 1.0.1)
@@ -67,7 +67,7 @@ GEM
     multi_json (1.9.2)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
-    openstax_utilities (2.1.0)
+    openstax_utilities (2.2.0)
       attribeautiful (>= 0.0.7)
       rails (>= 3.1)
     polyglot (0.3.4)
@@ -96,9 +96,10 @@ GEM
     rake (10.2.1)
     rdoc (3.12.2)
       json (~> 1.4)
-    representable (1.7.7)
+    representable (1.8.0)
       multi_json
       nokogiri
+      uber
     roar (0.12.5)
       representable (>= 1.6.0)
     roar-rails (0.1.5)

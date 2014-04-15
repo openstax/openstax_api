@@ -28,20 +28,22 @@ module OpenStax
         rescue_from Exception, :with => :rescue_from_exception
 
         # Keep old current_user method so we can use it
-        alias_method :current_application_user, :current_user
+        alias_method :current_application_user,
+                     OpenStax::Api.configuration.current_user_method
 
         # TODO: doorkeeper users (or rather users who have doorkeeper
         # applications) need to agree to API terms of use (need to have agreed
         # to it at one time, can't require them to agree when terms change since
         # their apps are doing the talking) -- this needs more thought
 
-        # TODO: maybe freak out if current user is anonymous (require we know
+        # TODO: maybe freak out if current_user is anonymous (require we know
         # who person/app is so we can do things like throttling, API terms
         # agreement, etc)
 
         # Always return an ApiUser
         def current_user
-          @current_api_user ||= ApiUser.new(doorkeeper_token, lambda { super })
+          @current_api_user ||= ApiUser.new(doorkeeper_token,
+                                            lambda { current_application_user })
         end
 
       protected

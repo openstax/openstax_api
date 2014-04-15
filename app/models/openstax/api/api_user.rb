@@ -27,7 +27,7 @@ module OpenStax
         # procs that can get it for us.  This could save us some queries.
 
         if doorkeeper_token
-          user_class = OpenStax::Api.configuration.user_class_name.classify.constantize
+          user_class = OpenStax::Api.configuration.user_class_name.constantize
           @application_proc = lambda { doorkeeper_token.application }
           @user_proc = lambda {
             doorkeeper_token.resource_owner_id ? 
