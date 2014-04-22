@@ -1,5 +1,7 @@
 # openstax_api
 
+[![Build Status](https://travis-ci.org/openstax/openstax_api.svg?branch=master)](https://travis-ci.org/openstax/openstax_api)
+
 API utilities for OpenStax products and tools.
 
 ## Installation
