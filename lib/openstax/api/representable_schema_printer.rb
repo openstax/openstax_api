@@ -13,8 +13,8 @@ module OpenStax
 
         json_string = JSON.pretty_generate(schema, {indent: options[:indent]})
 
-        "\nSchema  {##{SecureRandom.hex(4)} .schema}\n------\n" +
-        "<pre class='code'>\n#{json_string}\n</pre>\n"
+        "\n## Schema  {##{SecureRandom.hex(4)} .schema}\n" +
+        "\n<pre class='code'>\n#{json_string}\n</pre>\n"
       end
 
     protected
