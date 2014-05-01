@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    openstax_api (1.0.3)
+    openstax_api (1.0.4)
       doorkeeper (>= 0.5)
       exception_notification (>= 4.0)
       openstax_utilities (>= 1.0.1)
