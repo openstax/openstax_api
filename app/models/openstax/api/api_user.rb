@@ -51,7 +51,7 @@ module OpenStax
       end
 
       def method_missing(method_name, *arguments, &block)
-        if method_name.to_s =~ /can_(.*)\?/
+        if method_name.to_s =~ /\Acan_(\w+)\?\z/
           can_do?($1.to_sym, arguments.first)
         else
           super
@@ -59,7 +59,7 @@ module OpenStax
       end
 
       def respond_to_missing?(method_name, include_private = false)
-        method_name.to_s =~ /can_(.*)\?/ || super
+        method_name.to_s =~ /\Acan_(\w+)\?\z/ || super
       end
 
     end
