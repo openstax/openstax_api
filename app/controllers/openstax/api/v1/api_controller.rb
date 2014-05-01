@@ -20,15 +20,15 @@ module OpenStax
         skip_protect_beta if respond_to? :skip_protect_beta
 
         skip_before_filter :authenticate_user!
-        doorkeeper_for :all, :unless => :application_user_without_token?
+        doorkeeper_for :all, :unless => :user_without_token?
         skip_before_filter :verify_authenticity_token,
-                           :unless => :application_user_without_token?
+                           :unless => :user_without_token?
 
         respond_to :json
         rescue_from Exception, :with => :rescue_from_exception
 
         # Keep old current_user method so we can use it
-        alias_method :current_application_user,
+        alias_method :current_human_user,
                      OpenStax::Api.configuration.current_user_method
 
         # TODO: doorkeeper users (or rather users who have doorkeeper
@@ -43,13 +43,13 @@ module OpenStax
         # Always return an ApiUser
         def current_user
           @current_api_user ||= ApiUser.new(doorkeeper_token,
-                                            lambda { current_application_user })
+                                            lambda { current_human_user })
         end
 
       protected
 
-        def application_user_without_token?
-          current_application_user && doorkeeper_token.blank?
+        def user_without_token?
+          current_human_user && doorkeeper_token.blank?
         end
 
         def rescue_from_exception(exception)
@@ -81,8 +81,6 @@ module OpenStax
           
           head error
         end
-        
-
 
       end
 
