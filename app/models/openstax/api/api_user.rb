@@ -17,37 +17,29 @@ module OpenStax
   module Api
     class ApiUser
 
-      def initialize(doorkeeper_token, non_doorkeeper_user_proc)
-        # If we have a doorkeeper_token, derive the Application and User
-        # from it.  If not, we're in case #1 above and the User should be 
-        # retrieved from the alternative proc provided in arguments and 
-        # there is no application.
-        #
-        # In both cases, don't actually retrieve any data -- just save off
-        # procs that can get it for us.  This could save us some queries.
+      USER_CLASS = OpenStax::Api.configuration.user_class_name.constantize
 
-        if doorkeeper_token
-          user_class = OpenStax::Api.configuration.user_class_name.constantize
-          @application_proc = lambda { doorkeeper_token.application }
-          @user_proc = lambda {
-            doorkeeper_token.resource_owner_id ? 
-              user_class.find(doorkeeper_token.resource_owner_id) :
-              nil
-          }
-        else
-          @user_proc = non_doorkeeper_user_proc
-          @application_proc = lambda { nil }
-        end
+      def initialize(doorkeeper_token, non_doorkeeper_user_proc)
+        @doorkeeper_token = doorkeeper_token
+        @non_doorkeeper_user_proc = non_doorkeeper_user_proc
       end
 
       # Returns a Doorkeeper::Application or nil
       def application
-        @application ||= @application_proc.call
+        # If we have a doorkeeper_token, derive the Application from it.
+        # If not, we're in case #1 above and the Application should be nil.
+        @application ||= @doorkeeper_token.try(:application)
       end
 
-      # Can return an instance of User, AnonymousUser, or nil
+      # Returns an instance of User, AnonymousUser, or nil
       def human_user
-        @user ||= @user_proc.call
+        # If we have a doorkeeper_token, derive the User from it.
+        # If not, we're in case #1 above and the User should be
+        # retrieved from the non_doorkeeper_user_proc.
+        @user ||= @doorkeeper_token ? \
+                    USER_CLASS.where(
+                      :id => @doorkeeper_token.try(:resource_owner_id)
+                    ).first : @non_doorkeeper_user_proc.call
       end
 
       ##########################
@@ -58,24 +50,16 @@ module OpenStax
         OSU::AccessPolicy.action_allowed?(action, self, resource)
       end
 
-      def can_read?(resource)
-        can_do?(:read, resource)
-      end
-      
-      def can_create?(resource)
-        can_do?(:create, resource)
-      end
-      
-      def can_update?(resource)
-        can_do?(:update, resource)
-      end
-        
-      def can_destroy?(resource)
-        can_do?(:destroy, resource)
+      def method_missing(method_name, *arguments, &block)
+        if method_name.to_s =~ /can_(.*)\?/
+          can_do?($1.to_sym, arguments.first)
+        else
+          super
+        end
       end
 
-      def can_sort?(resource)
-        can_do?(:sort, resource)
+      def respond_to_missing?(method_name, include_private = false)
+        method_name.to_s =~ /can_(.*)\?/ || super
       end
 
     end
