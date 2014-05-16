@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module OpenStax
   module Api
-    describe RouteExtensions do
+    describe RoutingMapperIncludes do
       it 'must add api method to ActionDispatch::Routing::Mapper' do
         mapper = ActionDispatch::Routing::Mapper.new(Rails.application.routes)
         expect(mapper).to respond_to(:api)

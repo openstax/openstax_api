@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module OpenStax
   module Api
-    describe DoorkeeperExtensions do
+    describe DoorkeeperApplicationIncludes do
       it 'must add methods to Doorkeeper::Application' do
         application = Doorkeeper::Application.new
         expect(application).to respond_to(:is_human?)

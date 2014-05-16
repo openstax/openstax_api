@@ -1,6 +1,6 @@
 module OpenStax
   module Api
-    module DoorkeeperExtensions
+    module DoorkeeperApplicationIncludes
       # Add some fields to Doorkeeper::Application
       def is_human?
         false
@@ -19,5 +19,6 @@ end
 
 # This needs to run after the orm is selected in the doorkeeper initializer
 OpenStax::Api::Engine.config.after_initialize do
-  Doorkeeper::Application.send :include, OpenStax::Api::DoorkeeperExtensions
+  Doorkeeper::Application.send :include,
+                               OpenStax::Api::DoorkeeperApplicationIncludes
 end
