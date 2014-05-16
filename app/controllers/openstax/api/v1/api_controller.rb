@@ -25,8 +25,6 @@ module OpenStax
 
         respond_to :json
 
-        rescue_from Exception, :with => :rescue_from_exception
-
         # Keep old current_user method so we can use it
         alias_method :current_session_user,
                      OpenStax::Api.configuration.current_user_method
@@ -58,34 +56,6 @@ module OpenStax
 
         def session_user?
           current_human_user && doorkeeper_token.blank?
-        end
-
-        def rescue_from_exception(exception)
-          # See https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L453 for error names/symbols
-          error, notify = case exception
-          when SecurityTransgression
-            [:forbidden, false]
-          when ActiveRecord::RecordNotFound, 
-               ActionController::RoutingError,
-               ActionController::UnknownController,
-               AbstractController::ActionNotFound
-            [:not_found, false]
-          else
-            [:internal_server_error, true]
-          end
-
-          if notify
-            ExceptionNotifier.notify_exception(
-              exception,
-              env: request.env,
-              data: { message: "An exception occurred" }
-            )
-
-            Rails.logger.error("An exception occurred: #{exception.message}\n\n#{exception.backtrace.join("\n")}")
-          end
-
-          raise exception if Rails.application.config.consider_all_requests_local
-          head error
         end
 
       end
