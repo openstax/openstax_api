@@ -23,13 +23,9 @@ module OpenStax
         # This filter can wait until the user signs in again
         skip_interception :expired_password if respond_to? :skip_interception
 
-        # JSON can't really redirect
-        # Redirect from a filter effectively means "deny access"
-        def redirect_to(options = {}, response_status = {})
-          head :forbidden
-        end
-
         respond_to :json
+
+        rescue_from Exception, :with => :rescue_from_exception
 
         # Keep old current_user method so we can use it
         alias_method :current_session_user,
@@ -52,10 +48,44 @@ module OpenStax
           current_api_user.human_user
         end
 
+        # JSON can't really redirect
+        # Redirect from a filter effectively means "deny access"
+        def redirect_to(options = {}, response_status = {})
+          head :forbidden
+        end
+
         protected
 
         def session_user?
           current_human_user && doorkeeper_token.blank?
+        end
+
+        def rescue_from_exception(exception)
+          # See https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L453 for error names/symbols
+          error, notify = case exception
+          when SecurityTransgression
+            [:forbidden, false]
+          when ActiveRecord::RecordNotFound, 
+               ActionController::RoutingError,
+               ActionController::UnknownController,
+               AbstractController::ActionNotFound
+            [:not_found, false]
+          else
+            [:internal_server_error, true]
+          end
+
+          if notify
+            ExceptionNotifier.notify_exception(
+              exception,
+              env: request.env,
+              data: { message: "An exception occurred" }
+            )
+
+            Rails.logger.error("An exception occurred: #{exception.message}\n\n#{exception.backtrace.join("\n")}")
+          end
+
+          raise exception if Rails.application.config.consider_all_requests_local
+          head error
         end
 
       end
