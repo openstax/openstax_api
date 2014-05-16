@@ -17,8 +17,7 @@ module OpenStax
 
         skip_before_filter :authenticate_user!
         doorkeeper_for :all, :unless => :session_user?
-        skip_before_filter :verify_authenticity_token,
-                           :unless => :session_user?
+        skip_before_filter :verify_authenticity_token, :unless => :session_user?
 
         # This filter can wait until the user signs in again
         skip_interception :expired_password if respond_to? :skip_interception
@@ -55,7 +54,7 @@ module OpenStax
         protected
 
         def session_user?
-          current_human_user && doorkeeper_token.blank?
+          current_session_user && doorkeeper_token.blank?
         end
 
       end
