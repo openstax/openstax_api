@@ -41,10 +41,6 @@ module OpenStax
                     @non_doorkeeper_user_proc.call
       end
 
-      def is_anonymous?
-        !application && (!human_user || human_user.is_anonymous?)
-      end
-
       ##########################
       # Access Control Helpers #
       ##########################
