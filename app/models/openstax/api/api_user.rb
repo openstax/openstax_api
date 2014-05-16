@@ -4,7 +4,7 @@
 #      someone who logs into this site and then uses this site's Backbone 
 #      interface).
 #   2. It can be a combination of a Doorkeeper Application and a User, 
-#      given via OAuth's Authorization or Implicit flows.
+#      given via OAuth's Authorization Code or Implicit flows.
 #   3. It can just be a Doorkeeper Application, given through OAuth's
 #      Client Credentials flow.  
 # 
@@ -36,10 +36,9 @@ module OpenStax
         # If we have a doorkeeper_token, derive the User from it.
         # If not, we're in case #1 above and the User should be
         # retrieved from the non_doorkeeper_user_proc.
-        @user ||= @doorkeeper_token ? \
-                    USER_CLASS.where(
-                      :id => @doorkeeper_token.try(:resource_owner_id)
-                    ).first : @non_doorkeeper_user_proc.call
+        @user ||= @doorkeeper_token ? USER_CLASS.where(
+                    :id => @doorkeeper_token.try(:resource_owner_id)).first : \
+                    @non_doorkeeper_user_proc.call
       end
 
       ##########################
