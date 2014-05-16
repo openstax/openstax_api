@@ -32,7 +32,7 @@ module OpenStax
         respond_to :json
 
         # Keep old current_user method so we can use it
-        alias_method :current_human_user,
+        alias_method :current_session_user,
                      OpenStax::Api.configuration.current_user_method
 
         # Ensure we will never again confuse human users and api users
@@ -41,7 +41,15 @@ module OpenStax
         # Always return an ApiUser
         def current_api_user
           @current_api_user ||= ApiUser.new(doorkeeper_token,
-                                            lambda { current_human_user })
+                                            lambda { current_session_user })
+        end
+
+        def current_application
+          current_api_user.application
+        end
+
+        def current_human_user
+          current_api_user.human_user
         end
 
         protected
