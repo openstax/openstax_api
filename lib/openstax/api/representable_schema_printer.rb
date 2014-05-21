@@ -87,7 +87,6 @@ module OpenStax
       def self.json_schema(representer, options = {})
         definitions = {}
         schema = json_object(representer, definitions, options)
-        schema.delete(:additionalProperties)
         schema[:definitions] = definitions unless definitions.blank?
         schema
       end
