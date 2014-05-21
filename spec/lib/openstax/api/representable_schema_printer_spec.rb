@@ -9,8 +9,16 @@ module OpenStax
         expect(schema).to include('{#')
         expect(schema).to include(' .schema}')
         expect(schema).to include("<pre class='code'>")
-        expect(schema).to include("{\n  \"type\": \"object\",\n  \"properties\": {\n    \"username\": {\n    },\n    \"password_hash\": {\n    }\n  },\n  \"required\": [\n\n  ],\n  \"definitions\": {\n  }\n}")
         expect(schema).to include('</pre>')
+        json_schema = schema.match(/<pre[^>]*>([^<]*)<\/pre>/)
+        expect(JSON.parse(json_schema[1])).to eq({
+            "type" => "object",
+            "required" => ["username"],
+            "properties" => {
+              "username" => { "type" => "string" },
+              "password_hash" => { "type" => "string" }
+            }
+          })
       end
     end
   end
