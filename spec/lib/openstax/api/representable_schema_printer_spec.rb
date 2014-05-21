@@ -13,7 +13,7 @@ module OpenStax
         json_schema = schema.match(/<pre class='code'>([^<]*)<\/pre>/)
         expect(JSON.parse(json_schema[1])).to eq({
             "type" => "object",
-            "required" => ["username"],
+            "required" => [ "username" ],
             "properties" => {
               "username" => { "type" => "string" },
               "password_hash" => { "type" => "string" }
