@@ -4,14 +4,10 @@ module OpenStax
 
       def self.json(representer, options={})
         options[:include] ||= [:readable, :writeable]
-        options[:indent] ||= '  '
 
-        definitions = {}
+        schema = json_schema(representer, options)
 
-        schema = json_schema(representer, definitions, options)
-        schema[:definitions] = definitions
-
-        json_string = JSON.pretty_generate(schema, {indent: options[:indent]})
+        json_string = JSON.pretty_generate(schema)
 
         "\n## Schema  {##{SecureRandom.hex(4)} .schema}\n" +
         "\n<pre class='code'>\n#{json_string}\n</pre>\n"
@@ -19,63 +15,78 @@ module OpenStax
 
     protected
 
-      def self.json_schema(representer, definitions, options={})
-        schema = {
-          # id: schema_id(representer),
-          # title: schema_title(representer),
-          type: "object",
-          properties: {},
-          required: []
-          # :$schema => "http://json-schema.org/draft-04/schema#"
-        }
+      def self.representer_name(representer)
+        representer.name.chomp('Representer').underscore
+      end
+
+      def self.definition_name(name)
+        "#/definitions/#{name}"
+      end
+
+      def self.json_object(representer, definitions, options = {})
+        schema = { type: :object, required: [], properties: {},
+                   additionalProperties: false }
 
         representer.representable_attrs.each do |attr|
-          schema_info = attr.options[:schema_info] || {}
+          name = attr.name
+          schema_info = attr[:schema_info] || {}
 
-          schema[:required].push(attr.name) if schema_info[:required]
+          schema[:required].push(name.to_sym) if schema_info[:required]
 
-          next unless [options[:include]].flatten.any?{|inc| attr.send(inc.to_s+"?") || schema_info[:required]}
-          
-          attr_info = {}
+          # Skip unless attr includes the specified key or is required
+          next unless [options[:include]].flatten.any?{ |inc|
+                        attr.send(inc.to_s + "?")} || schema_info[:required]
 
-          if attr.options[:collection]
-            attr_info[:type] = "array"
-          else
-            attr_info[:type] = attr.options[:type].to_s.downcase if attr.options[:type]
-          end
+          # Guess a default type based on the attribute name
+          attr_info ||= { type: name.end_with?('id') ? :integer : :string }
 
           schema_info.each do |key, value|
-            next if [:required].include?(key)
+            next if key == :required
             value = value.to_s.downcase if key == :type
             attr_info[key] = value
           end
 
-          decorator = attr.options[:decorator].try(:is_a?, Proc) ? nil : attr.options[:decorator]
+          # Overwrite type for collections
+          attr_info[:type] = :array if attr[:collection]
 
-          if decorator
-            relative_schema_id(decorator).tap do |id|
-              attr_info[:$ref] = "#/definitions/#{id}"
-              definitions[id] ||= json_schema(decorator, definitions, options)
+          if attr[:use_decorator]
+            # Implicit representer - nest attributes
+            decorator = attr[:extend].evaluate(self)
+            attr_info.merge!(json_object(decorator, definitions, options))
+          elsif attr[:extend]
+            # Explicit representer - use reference
+            decorator = attr[:extend].evaluate(self)
+            rname = representer_name(decorator)
+            dname = definition_name(rname)
+
+            if attr[:collection]
+              attr_info[:items] = { :$ref => dname }
+            else
+              # Type is included in ref
+              attr_info.delete(:type)
+              attr_info[:$ref] = dname
             end
+
+            definitions[rname] ||= json_object(decorator,
+                                               definitions, options)
           end
 
-          schema[:properties][attr.name.to_sym] = attr_info
+          schema[:properties][name.to_sym] = attr_info
+        end
+
+        # Cleanup unused fields
+        [:required, :properties].each do |field|
+          schema.delete(field) if schema[field].blank?
         end
 
         schema
       end
 
-      def self.schema_title(representer)
-        representer.name.gsub(/Representer/,'')
-      end
-
-      def self.schema_id(representer)
-        "http://#{OpenStax::Api::Engine::MAIN_APP_NAME.to_s}.openstax.org/" +
-        "#{schema_title(representer).downcase.gsub(/::/,'/')}"
-      end
-
-      def self.relative_schema_id(representer)
-        representer.name.gsub(/Representer/,'').downcase.gsub(/::/,'/')
+      def self.json_schema(representer, options = {})
+        definitions = {}
+        schema = json_object(representer, definitions, options)
+        schema[:definitions] = definitions unless definitions.blank?
+        schema
       end
 
     end

@@ -1,11 +1,12 @@
 PATH
   remote: .
   specs:
-    openstax_api (2.0.0)
+    openstax_api (2.1.0)
       doorkeeper (>= 0.5)
       exception_notification (>= 4.0)
       openstax_utilities (>= 1.0.1)
       rails (>= 3.1)
+      representable (>= 1.8)
       roar (>= 0.12.1)
       roar-rails (>= 0.1.2)
 
