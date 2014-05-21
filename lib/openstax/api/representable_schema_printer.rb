@@ -71,9 +71,9 @@ module OpenStax
               definitions[rname] ||= json_object(decorator,
                                                  definitions, options)
             end
-
-            schema[:properties][name.to_sym] = attr_info
           end
+
+          schema[:properties][name.to_sym] = attr_info
         end
 
         # Cleanup unused fields
