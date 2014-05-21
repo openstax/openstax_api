@@ -37,40 +37,38 @@ module OpenStax
           next unless [options[:include]].flatten.any?{ |inc|
                         attr.send(inc.to_s + "?")} || schema_info[:required]
 
+          # Guess a default type based on the attribute name
+          attr_info ||= { type: name.end_with?('id') ? :integer : :string }
+
+          schema_info.each do |key, value|
+            next if key == :required
+            value = value.to_s.downcase if key == :type
+            attr_info[key] = value
+          end
+
+          # Overwrite type for collections
+          attr_info[:type] = :array if attr[:collection]
+
           if attr[:use_decorator]
             # Implicit representer - nest attributes
             decorator = attr[:extend].evaluate(self)
-            attr_info = json_object(decorator, definitions, options)
-          else
-            # Guess a default type based on the attribute name
-            attr_info = { type: name.end_with?('id') ? :integer : :string }
+            attr_info.merge!(json_object(decorator, definitions, options))
+          elsif attr[:extend]
+            # Explicit representer - use reference
+            decorator = attr[:extend].evaluate(self)
+            rname = representer_name(decorator)
+            dname = definition_name(rname)
 
-            schema_info.each do |key, value|
-              next if key == :required
-              value = value.to_s.downcase if key == :type
-              attr_info[key] = value
+            if attr[:collection]
+              attr_info[:items] = { :$ref => dname }
+            else
+              # Type is included in ref
+              attr_info.delete(:type)
+              attr_info[:$ref] = dname
             end
 
-            # Overwrite type for collections
-            attr_info[:type] = :array if attr[:collection]
-
-            if attr[:extend]
-              # Explicit representer - use reference
-              decorator = attr[:extend].evaluate(self)
-              rname = representer_name(decorator)
-              dname = definition_name(rname)
-
-              if attr[:collection]
-                attr_info[:items] = { :$ref => dname }
-              else
-                # Type is included in ref
-                attr_info.delete(:type)
-                attr_info[:$ref] = dname
-              end
-
-              definitions[rname] ||= json_object(decorator,
-                                                 definitions, options)
-            end
+            definitions[rname] ||= json_object(decorator,
+                                               definitions, options)
           end
 
           schema[:properties][name.to_sym] = attr_info
