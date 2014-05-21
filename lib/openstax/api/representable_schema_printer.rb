@@ -75,7 +75,7 @@ module OpenStax
         end
 
         # Cleanup unused fields
-        [:type, :required, :properties].each do |field|
+        [:required, :properties].each do |field|
           schema.delete(field) if schema[field].blank?
         end
 
