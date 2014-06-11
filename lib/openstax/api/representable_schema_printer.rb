@@ -38,8 +38,10 @@ module OpenStax
                         attr.send(inc.to_s + "?")} || schema_info[:required]
 
           # Guess a default type based on the attribute name
-          attr_info ||= { type: attr[:type].to_s.downcase || \
-                          (name.end_with?('id') ? :integer : :string) }
+          type = attr[:type].to_s.downcase
+          type = type.blank? ? \
+                 (name.end_with?('id') ? :integer : :string) : type
+          attr_info ||= { type: type }
 
           schema_info.each do |key, value|
             next if key == :required

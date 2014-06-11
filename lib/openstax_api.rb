@@ -1,6 +1,7 @@
 require 'openstax/api/engine'
 require 'openstax/api/doorkeeper_application_includes'
 require 'openstax/api/routing_mapper_includes'
+require 'openstax/api/spec_helpers'
 
 module OpenStax
   module Api
