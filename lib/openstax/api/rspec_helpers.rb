@@ -1,5 +1,3 @@
-require 'rack/test'
-
 # Provides API-specific HTTP request methods
 #
 # The args at the end of each request is interpreted a hash that can contain
@@ -14,7 +12,7 @@ require 'rack/test'
 #
 module OpenStax
   module Api
-    module SpecHelpers
+    module RSpecHelpers
 
       def api_get(action, doorkeeper_token, args={})
         api_request(:get, action, doorkeeper_token, args)
@@ -86,6 +84,6 @@ end
 
 if defined?(RSpec)
   RSpec.configure do |c|
-    c.include OpenStax::Api::SpecHelpers
+    c.include OpenStax::Api::RSpecHelpers
   end
 end
