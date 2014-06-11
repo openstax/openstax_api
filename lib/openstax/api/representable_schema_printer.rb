@@ -16,7 +16,7 @@ module OpenStax
     protected
 
       def self.representer_name(representer)
-        representer.name.chomp('Representer').underscore
+        representer.name.chomp('Representer').demodulize.camelize(:lower)
       end
 
       def self.definition_name(name)
@@ -38,7 +38,10 @@ module OpenStax
                         attr.send(inc.to_s + "?")} || schema_info[:required]
 
           # Guess a default type based on the attribute name
-          attr_info ||= { type: name.end_with?('id') ? :integer : :string }
+          type = attr[:type].to_s.downcase
+          type = type.blank? ? \
+                 (name.end_with?('id') ? :integer : :string) : type
+          attr_info ||= { type: type }
 
           schema_info.each do |key, value|
             next if key == :required
@@ -47,7 +50,7 @@ module OpenStax
           end
 
           # Overwrite type for collections
-          attr_info[:type] = :array if attr[:collection]
+          attr_info[:type] = 'array' if attr[:collection]
 
           if attr[:use_decorator]
             # Implicit representer - nest attributes
