@@ -16,7 +16,7 @@ module OpenStax
             "required" => [ "username" ],
             "properties" => {
               "username" => { "type" => "string" },
-              "password_hash" => { "type" => "string" }
+              "name" => { "type" => "string" }
             },
             "additionalProperties" => false
           })

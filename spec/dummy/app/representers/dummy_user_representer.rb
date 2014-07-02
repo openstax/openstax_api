@@ -4,5 +4,6 @@ module DummyUserRepresenter
   include Roar::Representer::JSON
   
   property :username, :schema_info => { :required => true }
-  property :password_hash
+  property :name
+  property :password_hash, readable: false, writeable: false
 end

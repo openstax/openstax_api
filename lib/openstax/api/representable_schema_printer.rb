@@ -42,7 +42,9 @@ module OpenStax
 
           # Skip unless attr includes the specified key or is required
           next unless [options[:include]].flatten.any?{ |inc|
-                        attr[inc]} || schema_info[:required]
+            m = inc.to_s + "?"
+            attr.respond_to?(m) ? attr.send(m) : attr[inc]
+          } || schema_info[:required]
 
           # Guess a default type based on the attribute name
           type = attr[:type].to_s.downcase
