@@ -37,7 +37,7 @@ module OpenStax
                    additionalProperties: false }
 
         representer.representable_attrs.each do |attr|
-          name = attr.name
+          name = attr[:as].evaluate(self)
           schema_info = attr[:schema_info] || {}
 
           schema[:required].push(name.to_sym) if schema_info[:required]
