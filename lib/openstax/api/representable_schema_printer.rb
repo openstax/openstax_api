@@ -23,7 +23,9 @@ module OpenStax
     protected
 
       def self.representer_name(representer)
-        representer.name.chomp('Representer').demodulize.camelize(:lower)
+        name = representer.name
+        return nil if name.nil?
+        name.chomp('Representer').demodulize.camelize(:lower)
       end
 
       def self.definition_name(name)
@@ -65,26 +67,27 @@ module OpenStax
           # Overwrite type for collections
           attr_info[:type] = 'array' if attr[:collection]
 
-          if attr[:use_decorator]
-            # Implicit representer - nest attributes
-            decorator = attr[:extend].evaluate(self)
-            attr_info.merge!(json_object(decorator, definitions, options))
-          elsif attr[:extend]
-            # Explicit representer - use reference
+          if attr[:extend]
+            # Nested representer
             decorator = attr[:extend].evaluate(self)
             rname = representer_name(decorator)
-            dname = definition_name(rname)
 
-            if attr[:collection]
-              attr_info[:items] = { :$ref => dname }
+            if rname
+              dname = definition_name(rname)
+
+              if attr[:collection]
+                attr_info[:items] = { :$ref => dname }
+              else
+                # Type is included in ref
+                attr_info.delete(:type)
+                attr_info[:$ref] = dname
+              end
+
+              definitions[rname] ||= json_object(decorator,
+                                                 definitions, options)
             else
-              # Type is included in ref
-              attr_info.delete(:type)
-              attr_info[:$ref] = dname
+              attr_info.merge!(json_object(decorator, definitions, options))
             end
-
-            definitions[rname] ||= json_object(decorator,
-                                               definitions, options)
           end
 
           schema[:properties][name.to_sym] = attr_info
