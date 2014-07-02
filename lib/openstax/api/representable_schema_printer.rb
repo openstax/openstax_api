@@ -2,6 +2,13 @@ module OpenStax
   module Api
     class RepresentableSchemaPrinter
 
+      def self.json_schema(representer, options = {})
+        definitions = {}
+        schema = json_object(representer, definitions, options)
+        schema[:definitions] = definitions unless definitions.blank?
+        schema
+      end
+
       def self.json(representer, options={})
         options[:include] ||= [:readable, :writeable]
 
@@ -35,7 +42,7 @@ module OpenStax
 
           # Skip unless attr includes the specified key or is required
           next unless [options[:include]].flatten.any?{ |inc|
-                        attr.send(inc.to_s + "?")} || schema_info[:required]
+                        attr[inc]} || schema_info[:required]
 
           # Guess a default type based on the attribute name
           type = attr[:type].to_s.downcase
@@ -45,6 +52,10 @@ module OpenStax
 
           schema_info.each do |key, value|
             next if key == :required
+            if key == :definitions
+              definitions.merge!(value)
+              next
+            end
             value = value.to_s.downcase if key == :type
             attr_info[key] = value
           end
@@ -82,13 +93,6 @@ module OpenStax
           schema.delete(field) if schema[field].blank?
         end
 
-        schema
-      end
-
-      def self.json_schema(representer, options = {})
-        definitions = {}
-        schema = json_object(representer, definitions, options)
-        schema[:definitions] = definitions unless definitions.blank?
         schema
       end
 
