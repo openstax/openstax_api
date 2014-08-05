@@ -15,8 +15,7 @@ module OpenStax
             "type" => "object",
             "required" => [ "username" ],
             "properties" => {
-              "username" => { "type" => "string" },
-              "name" => { "type" => "string" }
+              "username" => { "type" => "string" }
             },
             "additionalProperties" => false
           })

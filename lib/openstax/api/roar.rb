@@ -51,7 +51,7 @@ module OpenStax
         # what we're dealing with, but if user doesn't have permission we don't
         # want to have changed the DB.  Wrap in a transaction to protect ourselves.
 
-        model_klass.transaction do 
+        model_klass.transaction do
           consume!(@model, represent_with: get_representer(represent_with, @model))
           yield @model if block_given?
           raise SecurityTransgression unless current_api_user.can_create?(@model)

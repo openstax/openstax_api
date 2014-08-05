@@ -11,8 +11,6 @@
 # This API class gives us a way to abstract out these cases and also
 # gives us accessors to get the Application and User objects, if available.
 
-require 'openstax_utilities'
-
 module OpenStax
   module Api
     class ApiUser
@@ -39,26 +37,6 @@ module OpenStax
         @user ||= @doorkeeper_token ? USER_CLASS.where(
                     :id => @doorkeeper_token.try(:resource_owner_id)).first : \
                     @non_doorkeeper_user_proc.call
-      end
-
-      ##########################
-      # Access Control Helpers #
-      ##########################
-
-      def can_do?(action, resource)
-        OSU::AccessPolicy.action_allowed?(action, self, resource)
-      end
-
-      def method_missing(method_name, *arguments, &block)
-        if method_name.to_s =~ /\Acan_(\w+)\?\z/
-          can_do?($1.to_sym, arguments.first)
-        else
-          super
-        end
-      end
-
-      def respond_to_missing?(method_name, include_private = false)
-        method_name.to_s =~ /\Acan_(\w+)\?\z/ || super
       end
 
     end
