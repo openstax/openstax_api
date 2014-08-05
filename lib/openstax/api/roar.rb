@@ -1,6 +1,8 @@
 # Copyright 2011-2014 Rice University. Licensed under the Affero General Public 
 # License version 3 or later.  See the COPYRIGHT file for details.
 
+require 'openstax_utilities'
+
 module OpenStax
   module Api
 
@@ -17,13 +19,13 @@ module OpenStax
 
       def standard_read(model_klass, id, represent_with=nil)
         @model = model_klass.find(id)
-        raise SecurityTransgression unless current_api_user.can_read?(@model)
+        OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, @model)
         respond_with @model, represent_with: get_representer(represent_with, @model)
       end
 
       def standard_update(model_klass, id, represent_with=nil)
         @model = model_klass.find(id)
-        raise SecurityTransgression unless current_api_user.can_update?(@model)
+        OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, @model)
         consume!(@model, represent_with: get_representer(represent_with, @model))
         
         if @model.save
@@ -54,7 +56,7 @@ module OpenStax
         model_klass.transaction do
           consume!(@model, represent_with: get_representer(represent_with, @model))
           yield @model if block_given?
-          raise SecurityTransgression unless current_api_user.can_create?(@model)
+          OSU::AccessPolicy.require_action_allowed!(:create, current_api_user, @model)
         end
 
         if @model.save
@@ -66,7 +68,7 @@ module OpenStax
 
       def standard_destroy(model_klass, id)
         @model = model_klass.find(id)
-        raise SecurityTransgression unless current_api_user.can_destroy?(@model)
+        OSU::AccessPolicy.require_action_allowed!(:destroy, current_api_user, @model)
         
         if @model.destroy
           head :no_content
@@ -98,7 +100,7 @@ module OpenStax
         originalOrdered.each do |item|
           raise SecurityTransgression unless item.send(:container_column) == originalOrdered[0].send(:container_column) \
             if item.respond_to?(:container_column)
-          raise SecurityTransgression unless current_api_user.can_sort?(item)
+          OSU::AccessPolicy.require_action_allowed!(:sort, current_api_user, item)
         end
 
         originalOrderedIds = originalOrdered.collect{|sc| sc.id}
