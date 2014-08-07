@@ -82,9 +82,11 @@ module OpenStax
                 attr_info.delete(:type)
                 attr_info[:$ref] = dname
               end
-
-              definitions[rname] ||= json_object(decorator,
+              if definitions[rname].nil?
+                definitions[rname] = {}
+                definitions[rname] = json_object(decorator,
                                                  definitions, options)
+              end
             else
               attr_info.merge!(json_object(decorator, definitions, options))
             end
