@@ -1,3 +1,8 @@
+require 'roar-rails'
+require 'exception_notification'
+require 'openstax/api/roar'
+require 'openstax/api/apipie'
+
 module OpenStax
   module Api
     class Engine < ::Rails::Engine
