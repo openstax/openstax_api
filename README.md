@@ -24,19 +24,22 @@ $ bundle
 
 This gem includes the following classes, all under the OpenStax::Api namespace:
 
-### Controllers
+### Controller
 
-`ApiController`
+`OpenStax::Api::V1::ApiController`
 
-`OauthBasedApiController`
+Your API controllers should inherit from ApiController.
 
-Your API controllers should inherit from those classes.
+Your `current_user` method will not be available in ApiController.
+Instead, use the current_api_user, current_human_user and current_application methods.
 
-### Models
+### Model
 
-`ApiUser`
+`OpenStax::Api::V1::ApiUser`
 
-This is the class of someone using the API, which can either be a (signed in) user, a doorkeeper application, or a combination of both.
+Your users should NOT inherit from ApiUser. It is used only by ApiController.
+
+ApiUser represents either a signed in user, a doorkeeper application, or a combination of both.
 
 ## Doorkeeper Extensions
 

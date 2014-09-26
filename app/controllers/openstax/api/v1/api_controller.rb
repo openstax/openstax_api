@@ -8,14 +8,8 @@ module OpenStax
         include OpenStax::Api::Roar
         include OpenStax::Api::Apipie
 
-        skip_protect_beta if respond_to? :skip_protect_beta
-
-        skip_before_filter :authenticate_user!
         doorkeeper_for :all, :unless => :session_user?
         skip_before_filter :verify_authenticity_token, :unless => :session_user?
-
-        # This filter can wait until the user signs in again
-        skip_interception :expired_password if respond_to? :skip_interception
 
         respond_to :json
 
@@ -38,12 +32,6 @@ module OpenStax
 
         def current_human_user
           current_api_user.human_user
-        end
-
-        # JSON can't really redirect
-        # Redirect from a filter effectively means "deny access"
-        def redirect_to(options = {}, response_status = {})
-          head :forbidden
         end
 
         protected
