@@ -31,13 +31,18 @@ module OpenStax
       # current_user_method is a String containing the name of your controller
       # method that returns the current user.
       #
+      # routing_error_app is a Rack application that responds to routing errors for the API
+      #
       class Configuration
         attr_accessor :user_class_name
         attr_accessor :current_user_method
+        attr_accessor :routing_error_app
         
         def initialize      
           @user_class_name = 'User'
           @current_user_method = 'current_user'
+          @routing_error_app = lambda { |env|
+            [404, {"Content-Type" => 'application/json'}, ['']] }
         end
       end
 

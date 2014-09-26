@@ -5,6 +5,8 @@ module OpenStax
     module RoutingMapperIncludes
       def api(version, options = {})
         api_namespace = (options.delete(:namespace) || 'api').to_s
+        routing_error_app = options.delete(:routing_error_app) || \
+                              OpenStax::Api.configuration.routing_error_app
         constraints = Constraints.new(version: version,
                                       default: options.delete(:default))
 
@@ -16,8 +18,7 @@ module OpenStax
 
             yield
 
-            match '/*other', via: [:get, :post, :put, :patch, :delete],
-                  to: lambda { |env| [404, {"Content-Type" => 'application/json'}, ['']] }
+            match '/*other', via: [:get, :post, :put, :patch, :delete], to: routing_error_app
           end
         end
       end
