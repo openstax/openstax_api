@@ -22,8 +22,8 @@ module OpenStax
                                      non_doorkeeper_user_proc) }
 
         it 'has a human_user and an application' do
-          doorkeeper_token.stub(:application).and_return(application)
-          doorkeeper_token.stub(:resource_owner_id).and_return(user.id)
+          allow(doorkeeper_token).to receive(:application).and_return(application)
+          allow(doorkeeper_token).to receive(:resource_owner_id).and_return(user.id)
 
           expect(api_user.application).to eq(application)
           expect(api_user.human_user).to eq(user)
@@ -35,8 +35,8 @@ module OpenStax
                                      non_doorkeeper_user_proc) }
 
         it 'has an application but no human_user' do
-          doorkeeper_token.stub(:application).and_return(application)
-          doorkeeper_token.stub(:resource_owner_id).and_return(nil)
+          allow(doorkeeper_token).to receive(:application).and_return(application)
+          allow(doorkeeper_token).to receive(:resource_owner_id).and_return(nil)
 
           expect(api_user.application).to eq(application)
           expect(api_user.human_user).to be_nil

@@ -14,7 +14,7 @@ module OpenStax
       end
       
       def matches?(req)
-        @default || req.headers['Accept'].try(:include?, api_accept_header)
+        !!(@default || req.headers['Accept'].try(:include?, api_accept_header))
       end
     end
   end
