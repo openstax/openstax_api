@@ -68,28 +68,49 @@ module OpenStax
           attr_info[:type] = 'array' if attr[:collection]
 
           if attr[:extend]
-            # Nested representer
-            decorator = attr[:extend].evaluate(self)
-            rname = representer_name(decorator)
+            # We're dealing with a nested representer.  It may just be a simple representer 
+            # or it could be an Uber::Callable (representing that the representer could be
+            # one of a number of possible representers)
 
-            if rname
-              dname = definition_name(rname)
+            if attr[:extend].is_a?(Uber::Options::Value) && attr[:extend].dynamic?
+              # We're dealing with an Uber::Callable situation, so need to get the list of 
+              # possible representers and add each one to the "oneOf" list as well as to
+              # the definitions hash
 
-              if attr[:collection]
-                attr_info[:items] = { :$ref => dname }
-              else
-                # Type is included in ref
-                attr_info.delete(:type)
-                attr_info[:$ref] = dname
-              end
-              if definitions[rname].nil?
-                definitions[rname] = {}
-                definitions[rname] = json_object(decorator,
-                                                 definitions, options)
+              attr_info[:type] = 'object'
+              attr_info[:oneOf] = []
+
+              attr[:extend].evaluate(:all_sub_representers).each do |sub_representer|
+                srname = representer_name(sub_representer)
+                attr_info[:oneOf].push(:$ref => definition_name(srname))
+                definitions[srname] = json_object(sub_representer, definitions, options) if definitions[srname].nil?
               end
             else
-              attr_info.merge!(json_object(decorator, definitions, options))
-            end
+              # We're dealing with a simple representer
+              
+              decorator = attr[:extend].evaluate(self)
+              rname = representer_name(decorator)
+
+              if rname
+                dname = definition_name(rname)
+
+                if attr[:collection]
+                  attr_info[:items] = { :$ref => dname }
+                else
+                  # Type is included in ref
+                  attr_info.delete(:type)
+                  attr_info[:$ref] = dname
+                end
+                if definitions[rname].nil?
+                  definitions[rname] = {}
+                  definitions[rname] = json_object(decorator,
+                                                   definitions, options)
+                end
+              else
+                attr_info.merge!(json_object(decorator, definitions, options))
+              end
+            end # .is_a?(...)
+
           end
 
           schema[:properties][name.to_sym] = attr_info
