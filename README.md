@@ -54,15 +54,17 @@ Finally, this gem allows API routes to be simplified by using the api method, li
 ```rb
 apipie
 
-get 'api', to: 'static_pages#api'
+api :v1 do
+  get '/your_api_v1_routes_go_here'
+end
 
-api :v1, true do
-  get '/your_api_routes_go_here'
+api :v2, default: true do
+  get '/your_api_v2_routes_go_here'
 end
 ```
 
-The api route method takes a version argument and a boolean.
-If the boolean is true, that version is the default (latest) and will always match the Accept header. It should be defined last, as any API route after that will be ignored.
+The api route method takes a version argument and an options hash.
+If the `:default` option is set to true, that version is the default (latest) and will always match the Accept header. It should be defined last, as any API route after that will be ignored.
 
 ## Testing
 
