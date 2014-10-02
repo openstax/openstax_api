@@ -1,7 +1,7 @@
-# Load the rails application
+# Load the Rails application.
 require File.expand_path('../application', __FILE__)
 
 require 'controller_includes'
 
-# Initialize the rails application
-Dummy::Application.initialize!
+# Initialize the Rails application.
+Rails.application.initialize!

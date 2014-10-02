@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module OpenStax
   module Api
@@ -9,14 +9,14 @@ module OpenStax
 
         it 'matches if version is correct in the accept headers' do
           allow(req).to receive(:headers).and_return({
-            'Accept' => 'application/vnd.dummy.openstax.v1'
+            'Accept' => 'application/vnd.openstax.dummy.v1'
           })
           expect(constraints.matches? req).to eq true
         end
 
         it 'does not match if version is incorrect in the accept headers' do
           allow(req).to receive(:headers).and_return({
-            'Accept' => 'application/vnd.dummy.openstax.v2'
+            'Accept' => 'application/vnd.openstax.dummy.v2'
           })
           expect(constraints.matches? req).to eq false
         end
@@ -43,13 +43,13 @@ module OpenStax
 
         it 'matches if version is correct in the accept headers or if default' do
           allow(req).to receive(:headers).and_return({
-            'Accept' => 'application/vnd.dummy.openstax.v1'
+            'Accept' => 'application/vnd.openstax.dummy.v1'
           })
           expect(constraints.matches? req).to eq true
           expect(constraints_2.matches? req).to eq true
 
           allow(req).to receive(:headers).and_return({
-            'Accept' => 'application/vnd.dummy.openstax.v2'
+            'Accept' => 'application/vnd.openstax.dummy.v2'
           })
           expect(constraints.matches? req).to eq false
           expect(constraints_2.matches? req).to eq true
@@ -57,7 +57,7 @@ module OpenStax
 
         it 'matches if version is invalid' do
           allow(req).to receive(:headers).and_return({
-            'Accept' => 'application/vnd.dummy.openstax.v3'
+            'Accept' => 'application/vnd.openstax.dummy.v3'
           })
           expect(constraints.matches? req).to eq false
           expect(constraints_2.matches? req).to eq true
