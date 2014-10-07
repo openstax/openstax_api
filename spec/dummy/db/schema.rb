@@ -13,13 +13,6 @@
 
 ActiveRecord::Schema.define(version: 1) do
 
-  create_table "dummy_users", force: true do |t|
-    t.string   "username"
-    t.string   "password_hash"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "oauth_access_grants", force: true do |t|
     t.integer  "resource_owner_id", null: false
     t.integer  "application_id",    null: false
@@ -58,5 +51,18 @@ ActiveRecord::Schema.define(version: 1) do
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true
+
+  create_table "users", force: true do |t|
+    t.string   "username",      null: false
+    t.string   "password_hash", null: false
+    t.string   "name",          null: false
+    t.string   "email",         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "users", ["email"], name: "index_users_on_email"
+  add_index "users", ["name"], name: "index_users_on_name"
+  add_index "users", ["username"], name: "index_users_on_username"
 
 end

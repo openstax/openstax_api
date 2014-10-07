@@ -4,7 +4,7 @@ module OpenStax
   module Api
     describe RepresentableSchemaPrinter do
       it 'must print model schemas' do
-        schema = RepresentableSchemaPrinter.json(DummyUserRepresenter)
+        schema = RepresentableSchemaPrinter.json(UserRepresenter)
         expect(schema).to include('## Schema')
         expect(schema).to include('{#')
         expect(schema).to include(' .schema}')
@@ -15,7 +15,9 @@ module OpenStax
             "type" => "object",
             "required" => [ "username" ],
             "properties" => {
-              "username" => { "type" => "string" }
+              "username" => { "type" => "string" },
+              "name" => { "type" => "string" },
+              "email" => { "type" => "string" }
             },
             "additionalProperties" => false
           })

@@ -3,7 +3,7 @@
 # Subclasses should define the representer for the search results:
 #   collection :items, inherit: true, decorator: SomeRepresenter
 #
-# See ... for an example search representer
+# See spec/dummy/app/representers/user_search_representer.rb for an example search representer
 
 module OpenStax
   module Api
@@ -16,6 +16,7 @@ module OpenStax
                  type: Integer,
                  readable: true,
                  writeable: false,
+                 exec_context: :decorator,
                  schema_info: {
                    required: true,
                    description: "The number of items matching the query; can be more than the number returned if paginating"
@@ -28,6 +29,10 @@ module OpenStax
                      required: true,
                      description: "The items matching the query or a subset thereof when paginating"
                    }
+
+        def total_count
+          represented[:total_count] || represented[:items].limit(nil).offset(nil).count
+        end
 
       end
     end 
