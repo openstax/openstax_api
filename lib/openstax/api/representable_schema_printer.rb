@@ -45,7 +45,7 @@ module OpenStax
 
         representer.representable_attrs.each do |attr|
           # Handle some common attributes (as, schema_info, required)
-          name = attr[:as].evaluate(self)
+          name = attr[:as].evaluate(representer)
           schema_info = attr[:schema_info] || {}
 
           schema[:required].push(name.to_sym) if schema_info[:required]
@@ -83,10 +83,12 @@ module OpenStax
             # The nested representer can be either a simple representer or
             # an Uber::Callable, in which case there could be multiple representers
 
-            # Get the representers
-            decorators = [attr[:extend].evaluate(self, :all_sub_representers)].flatten
+            # Get the nested representers
+            # Evaluate syntax is evaluate(context, instance or class, *args)
+            # We have no instance or class (since we have no fragment), so we pass nil
             # By convention, the callables we use should return an array of all
-            # possible representers when we pass the :all_sub_representers argument
+            # possible representers when we pass the :all_sub_representers => true option
+            decorators = [attr[:extend].evaluate(representer, nil, :all_sub_representers => true)].flatten
 
             # Count the representers
             include_oneof = decorators.length > 1

@@ -1,9 +1,14 @@
+# Represents search results for a JSON API
+#
+# Subclasses should define the representer for the search results:
+#   collection :items, inherit: true, decorator: SomeRepresenter
+#
+# See ... for an example search representer
+
 module OpenStax
   module Api
     module V1
       class AbstractSearchRepresenter < ::Roar::Decorator
-
-        class_attribute :klass, :representer
 
         include ::Roar::Representer::JSON
 
@@ -17,8 +22,6 @@ module OpenStax
                  }
 
         collection :items,
-                   class: lambda { |*| klass },
-                   decorator: lambda { |object, *| object.representer },
                    readable: true,
                    writeable: false,
                    schema_info: {

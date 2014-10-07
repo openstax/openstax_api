@@ -1,3 +1,8 @@
+# A representer for Accounts
+#
+# This representer can be used directly or subclassed for an object that
+# delegates username, first_name, last_name, full_name and title to an account
+
 module OpenStax
   module Api
     module V1
