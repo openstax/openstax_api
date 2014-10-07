@@ -1,7 +1,3 @@
-module ControllerIncludes
-  def present_user
-    @user ||= DummyUser.create
-  end
+ActionController::Base.class_exec do
+  attr_accessor :doorkeeper_token, :present_user
 end
-
-ActionController::Base.send :include, ControllerIncludes

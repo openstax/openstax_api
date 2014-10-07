@@ -1,7 +1,5 @@
 # Dummy routine for testing the abstract search representer
 
-require 'squeel'
-
 class SearchUsers < OpenStax::Utilities::AbstractKeywordSearchRoutine
   self.initial_relation = User.unscoped
   self.search_proc = lambda { |with|

@@ -37,7 +37,7 @@ module OpenStax
         protected
 
         def session_user?
-          current_session_user && doorkeeper_token.blank?
+          !!current_session_user && doorkeeper_token.blank?
         end
 
       end

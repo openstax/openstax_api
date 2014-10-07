@@ -6,6 +6,12 @@ module OpenStax
       describe AbstractSearchRepresenter do
 
         before(:all) do
+          100.times do
+            FactoryGirl.create(:user)
+          end
+
+          User.where{name.like "% doe%"}.delete_all
+
           john_doe = FactoryGirl.create :user, name: "John Doe",
                                                username: "doejohn",
                                                email: "john@doe.com"
@@ -15,14 +21,10 @@ module OpenStax
           jack_doe = FactoryGirl.create :user, name: "Jack Doe",
                                                username: "doejack",
                                                email: "jack@doe.com"
+
           @john_hash = JSON.parse(UserRepresenter.new(john_doe).to_json)
           @jane_hash = JSON.parse(UserRepresenter.new(jane_doe).to_json)
           @jack_hash = JSON.parse(UserRepresenter.new(jack_doe).to_json)
-
-          100.times do
-            u = FactoryGirl.build(:user)
-            u.save unless u.name =~ /\A[\w]* doe[\w]*\z/i
-          end
         end
 
         it "represents search results" do
