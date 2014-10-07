@@ -81,43 +81,43 @@ module OpenStax
           expect(items[2]).to eq @john_hash
         end
 
-    it "represents paginated results" do
-      user_count = User.count
+        it "represents paginated results" do
+          user_count = User.count
 
-      outputs = SearchUsers.call('').outputs
-      response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
-      total_count = response['total_count']
-      items = response['items']
+          outputs = SearchUsers.call('').outputs
+          response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
+          total_count = response['total_count']
+          items = response['items']
 
-      expect(total_count).to eq user_count
-      expect(items.count).to eq user_count
+          expect(total_count).to eq user_count
+          expect(items.count).to eq user_count
 
-      outputs = SearchUsers.call('', per_page: 20).outputs
-      response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
-      total_count = response['total_count']
-      items = response['items']
-
-      expect(total_count).to eq user_count
-      expect(items.count).to eq 20
-
-        for page in 1..5
-          outputs = SearchUsers.call('', page: page, per_page: 20).outputs
+          outputs = SearchUsers.call('', per_page: 20).outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
 
           expect(total_count).to eq user_count
           expect(items.count).to eq 20
+
+          for page in 1..5
+            outputs = SearchUsers.call('', page: page, per_page: 20).outputs
+            response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
+            total_count = response['total_count']
+            items = response['items']
+
+            expect(total_count).to eq user_count
+            expect(items.count).to eq 20
+          end
+
+          outputs = SearchUsers.call('', page: 1000, per_page: 20).outputs
+          response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
+          total_count = response['total_count']
+          items = response['items']
+
+          expect(total_count).to eq user_count
+          expect(items.count).to eq 0
         end
-
-        outputs = SearchUsers.call('', page: 1000, per_page: 20).outputs
-        response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
-        total_count = response['total_count']
-        items = response['items']
-
-        expect(total_count).to eq user_count
-        expect(items.count).to eq 0
-      end
 
       end
     end
