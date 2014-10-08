@@ -8,19 +8,26 @@ module OpenStax
 
     module Roar
 
+      def standard_search(routine, query, options, represent_with)
+        model_klass = routine.send(:initial_relation).base_class
+        OSU::AccessPolicy.require_action_allowed!(:search, current_api_user, model_klass)
+        outputs = routine.call(query, options).outputs
+        respond_with outputs, represent_with: represent_with
+      end
+
       def standard_create(model, represent_with=nil, &block)
         standard_nested_create(model, nil, nil, represent_with, &block)
       end
 
       def standard_read(model, represent_with=nil)
-        OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, @model)
+        OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, model)
         respond_with model, represent_with: represent_with
       end
 
       def standard_update(model, represent_with=nil)
         OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
 
-        model_klass.transaction do
+        model.class.transaction do
           consume!(model, represent_with: represent_with)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
@@ -43,6 +50,16 @@ module OpenStax
         end
       end
 
+      def standard_index(relation, represent_with)
+        model_klass = relation.base_class
+        OSU::AccessPolicy.require_action_allowed!(:index, current_api_user, model_klass)
+        respond_with relation, represent_with: represent_with
+      end
+
+      def standard_sort(*args)
+        raise NotYetImplemented
+      end
+
       def standard_nested_create(model, container_association=nil,
                                  container=nil, represent_with=nil)
         if container_association && container
@@ -55,7 +72,7 @@ module OpenStax
         # We do want to consume before checking the permissions so we can know
         # what we're dealing with, but if user doesn't have permission we don't
         # want to have changed the DB.  Wrap in a transaction to protect ourselves.
-        model_klass.transaction do
+        model.class.transaction do
           consume!(model, represent_with: represent_with)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:create, current_api_user, model)
@@ -66,23 +83,6 @@ module OpenStax
             render json: model.errors, status: :unprocessable_entity
           end
         end
-      end
-
-      def standard_index(relation, represent_with)
-        model_klass = relation.base_class
-        OSU::AccessPolicy.require_action_allowed!(:index, current_api_user, model_klass)
-        respond_with relation, represent_with: represent_with
-      end
-
-      def standard_search(routine, query, options, represent_with)
-        model_klass = routine.send(:initial_relation).base_class
-        OSU::AccessPolicy.require_action_allowed!(:search, current_api_user, model_klass)
-        outputs = routine.call(query, options).outputs
-        respond_with outputs, represent_with: represent_with
-      end
-
-      def standard_sort(*args)
-        raise NotYetImplemented
       end
       
     end
