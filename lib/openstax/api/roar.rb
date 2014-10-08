@@ -9,7 +9,7 @@ module OpenStax
     module Roar
 
       def standard_search(routine, query, options, represent_with)
-        model_klass = routine.send(:initial_relation).base_class
+        model_klass = routine.search_class
         OSU::AccessPolicy.require_action_allowed!(:search, current_api_user, model_klass)
         outputs = routine.call(query, options).outputs
         respond_with outputs, represent_with: represent_with
