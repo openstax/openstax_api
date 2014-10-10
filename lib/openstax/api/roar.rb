@@ -96,7 +96,7 @@ module OpenStax
       end
 
       def render_api_errors(errors, status = :unprocessable_entity)
-        h[:status] = status
+        h[:status] = Rack::Utils.status_code(status)
         case errors
         when ActiveRecord::Errors
           h[:errors] = []
