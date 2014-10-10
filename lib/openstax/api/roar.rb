@@ -99,12 +99,12 @@ module OpenStax
       def render_api_errors(errors, status = :unprocessable_entity)
         hash = {status: Rack::Utils.status_code(status)}
         case errors
-        when ActiveModel::Errors
+        when ActiveModel::Errors, Lev::BetterActiveModelErrors
           hash[:errors] = []
-          errors.each do |attr, err|
-            hash[:errors] << {code: "#{attr.to_s}_#{
-                               err.to_s.gsub(/[\s-]/, '_').gsub(/[^\w]/, '')
-                             }", message: err}
+          errors.each do |attribute, message|
+            hash[:errors] << {code: "#{attribute.to_s}_#{
+                               message.to_s.gsub(/[\s-]/, '_').gsub(/[^\w]/, '')
+                             }", message: errors.full_message(attribute, message)}
           end
         when Lev::Errors
           hash[:errors] = errors.collect do |error|
