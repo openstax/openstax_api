@@ -13,6 +13,10 @@ module OpenStax
       def is_admin?
         false
       end
+
+      def is_anonymous?
+        false
+      end
     end
   end
 end

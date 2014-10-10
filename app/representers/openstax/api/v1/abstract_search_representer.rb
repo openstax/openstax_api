@@ -31,7 +31,15 @@ module OpenStax
                    }
 
         def total_count
-          represented[:total_count] || represented[:items].limit(nil).offset(nil).count
+          return represented[:total_count] if represented[:total_count]
+          case represented[:items]
+          when ActiveRecord::Relation
+            represented[:items].limit(nil).offset(nil).count
+          when Array
+            represented[:items].count
+          else
+            1
+          end
         end
 
       end
