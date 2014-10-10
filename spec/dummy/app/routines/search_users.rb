@@ -1,7 +1,6 @@
 # Dummy routine for testing the abstract search representer
 
 class SearchUsers < OpenStax::Utilities::AbstractKeywordSearchRoutine
-  self.initial_relation = User.unscoped
   self.search_proc = lambda { |with|
     with.keyword :username do |names|
       snames = to_string_array(names, append_wildcard: true)

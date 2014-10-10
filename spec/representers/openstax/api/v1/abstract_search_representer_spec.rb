@@ -28,7 +28,7 @@ module OpenStax
         end
 
         it "represents search results" do
-          outputs = SearchUsers.call('last_name:dOe').outputs
+          outputs = SearchUsers.call(User.unscoped, 'last_name:dOe').outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -38,7 +38,8 @@ module OpenStax
           expect(items).to include(@jane_hash)
           expect(items).to include(@jack_hash)
 
-          outputs = SearchUsers.call('first_name:jOhN last_name:DoE').outputs
+          outputs = SearchUsers.call(User.unscoped,
+                                     'first_name:jOhN last_name:DoE').outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -48,7 +49,8 @@ module OpenStax
           expect(items).not_to include(@jane_hash)
           expect(items).not_to include(@jack_hash)
 
-          outputs = SearchUsers.call('first_name:JoHn,JaNe last_name:dOe').outputs
+          outputs = SearchUsers.call(User.unscoped,
+                                     'first_name:JoHn,JaNe last_name:dOe').outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -60,7 +62,8 @@ module OpenStax
         end
 
         it "represents ordered results" do
-          outputs = SearchUsers.call('username:DoE', order_by: 'cReAtEd_At AsC, iD')
+          outputs = SearchUsers.call(User.unscoped, 'username:DoE',
+                                     order_by: 'cReAtEd_At AsC, iD')
                                .outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
@@ -71,7 +74,8 @@ module OpenStax
           expect(items[1]).to eq @jane_hash
           expect(items[2]).to eq @jack_hash
 
-          outputs = SearchUsers.call('username:dOe', order_by: 'CrEaTeD_aT dEsC, Id DeSc')
+          outputs = SearchUsers.call(User.unscoped, 'username:dOe',
+                                     order_by: 'CrEaTeD_aT dEsC, Id DeSc')
                                .outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
@@ -86,7 +90,7 @@ module OpenStax
         it "represents paginated results" do
           user_count = User.count
 
-          outputs = SearchUsers.call('').outputs
+          outputs = SearchUsers.call(User.unscoped, '').outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -94,7 +98,7 @@ module OpenStax
           expect(total_count).to eq user_count
           expect(items.count).to eq user_count
 
-          outputs = SearchUsers.call('', per_page: 20).outputs
+          outputs = SearchUsers.call(User.unscoped, '', per_page: 20).outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -103,7 +107,8 @@ module OpenStax
           expect(items.count).to eq 20
 
           for page in 1..5
-            outputs = SearchUsers.call('', page: page, per_page: 20).outputs
+            outputs = SearchUsers.call(User.unscoped, '',
+                                       page: page, per_page: 20).outputs
             response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
             total_count = response['total_count']
             items = response['items']
@@ -112,7 +117,8 @@ module OpenStax
             expect(items.count).to eq 20
           end
 
-          outputs = SearchUsers.call('', page: 1000, per_page: 20).outputs
+          outputs = SearchUsers.call(User.unscoped, '',
+                                     page: 1000, per_page: 20).outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']

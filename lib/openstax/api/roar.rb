@@ -8,12 +8,20 @@ module OpenStax
 
     module Roar
 
-      def standard_search(routine, query, options, represent_with)
-        model_klass = routine.search_class
-        OSU::AccessPolicy.require_action_allowed!(:search, current_api_user, model_klass)
-        outputs = routine.call(query, options).outputs
+      def standard_search(routine, relation, represent_with, options={})
+        user = current_api_user
+        model_klass = relation.base_class
+        OSU::AccessPolicy.require_action_allowed!(:search, user, model_klass)
+        options = options.merge({
+          search_routine: routine,
+          search_relation: relation,
+          params: params
+        })
+        result = OpenStax::Utilities::KeywordSearchHandler.call(options)
+        return render_api_errors(result.errors) if result.errors.any?
+        outputs = result.outputs
         outputs[:items].each do |item|
-          OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, item)
+          OSU::AccessPolicy.require_action_allowed!(:read, user, item)
         end
         respond_with outputs, represent_with: represent_with
       end
