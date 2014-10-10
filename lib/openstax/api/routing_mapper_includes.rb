@@ -11,7 +11,8 @@ module OpenStax
                                       default: options.delete(:default))
 
         namespace api_namespace, defaults: {format: 'json'}.merge(options) do
-          scope(module: version,
+          scope(except: [:new, :edit],
+                module: version,
                 constraints: constraints) do
             get '/', to: '/apipie/apipies#index', defaults: {format: 'html',
                                                              version: version.to_s}

@@ -27,7 +27,7 @@ module OpenStax
 
       # Attempts to extract the given representer's name
       def self.representer_name(representer)
-        name = representer.name
+        name = representer.try :name
         return nil if name.nil?
         name.chomp('Representer').demodulize.camelize(:lower)
       end
@@ -88,7 +88,8 @@ module OpenStax
             # We have no instance or class (since we have no fragment), so we pass nil
             # By convention, the callables we use should return an array of all
             # possible representers when we pass the :all_sub_representers => true option
-            decorators = [attr[:extend].evaluate(representer, nil, :all_sub_representers => true)].flatten
+            klass = attr[:class].evaluate(representer, '') rescue Object
+            decorators = [attr[:extend].evaluate(representer, klass, :all_sub_representers => true)].flatten.compact rescue []
 
             # Count the representers
             include_oneof = decorators.length > 1
