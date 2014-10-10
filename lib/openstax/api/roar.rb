@@ -97,24 +97,25 @@ module OpenStax
       end
 
       def render_api_errors(errors, status = :unprocessable_entity)
-        h[:status] = Rack::Utils.status_code(status)
+        hash = {status: Rack::Utils.status_code(status)}
         case errors
-        when ActiveRecord::Errors
-          h[:errors] = []
-          errors.each_error do |attr, error|
-            h[:errors] << {code: "#{attr.to_s}_#{error.type.to_s}",
-                           message: error.full_message}
+        when ActiveModel::Errors
+          hash[:errors] = []
+          errors.each do |attr, err|
+            hash[:errors] << {code: "#{attr.to_s}_#{
+                               err.to_s.gsub(/[\s-]/, '_').gsub(/[^\w]/, '')
+                             }", message: err}
           end
         when Lev::Errors
-          h[:errors] = errors.collect do |error|
+          hash[:errors] = errors.collect do |error|
             {code: error.code, message: error.message, data: error.data}
           end
         else
-          h[:errors] = [errors].flatten.collect do |error|
+          hash[:errors] = [errors].flatten.collect do |error|
             {code: error.to_s}
           end
         end
-        render json: h, status: status
+        render json: hash, status: status
       end
       
     end
