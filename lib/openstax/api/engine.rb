@@ -1,3 +1,4 @@
+require 'doorkeeper'
 require 'roar-rails'
 require 'exception_notification'
 require 'openstax_utilities'
