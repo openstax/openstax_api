@@ -78,13 +78,11 @@ module OpenStax
         raise NotYetImplemented
       end
 
-      def standard_nested_create(model, container_association=nil,
-                                 container=nil, represent_with=nil)
-        if container_association && container
-          # Must be able to update the container
-          OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, container)
-          model.send("#{container_association.to_s}=", container)
-        end
+      def standard_nested_create(model, container_association,
+                                 container, represent_with=nil)
+        # Must be able to update the container
+        OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, container)
+        model.send("#{container_association.to_s}=", container)
 
         standard_create(model, represent_with)
       end
