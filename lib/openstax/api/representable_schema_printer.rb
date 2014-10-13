@@ -85,11 +85,13 @@ module OpenStax
 
             # Get the nested representers
             # Evaluate syntax is evaluate(context, instance or class, *args)
-            # We have no instance or class (since we have no fragment), so we pass nil
-            # By convention, the callables we use should return an array of all
-            # possible representers when we pass the :all_sub_representers => true option
-            klass = attr[:class].evaluate(representer, '') rescue Object
-            decorators = [attr[:extend].evaluate(representer, klass, :all_sub_representers => true)].flatten.compact rescue []
+            # If we have no instance or class (since we have no fragment), we pass Object
+            # By convention, our callables should return an array of all possible
+            # representers when we pass the :all_sub_representers => true option
+            instance = attr[:instance].evaluate(representer, {}) rescue nil
+            klass = attr[:class].evaluate(representer, {}) rescue Object
+            decorators = [attr[:extend].evaluate(representer, instance || klass,
+              :all_sub_representers => true)].flatten.compact rescue []
 
             # Count the representers
             include_oneof = decorators.length > 1
