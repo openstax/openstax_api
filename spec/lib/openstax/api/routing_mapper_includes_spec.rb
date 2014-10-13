@@ -12,9 +12,8 @@ module OpenStax
           end
         end
         route_names = Rails.application.routes.named_routes.names
+        expect(route_names).to include(:api)
         expect(route_names).to include(:api_dummy_models)
-        expect(route_names).to include(:new_api_dummy_models)
-        expect(route_names).to include(:edit_api_dummy_models)
       end
     end
   end
