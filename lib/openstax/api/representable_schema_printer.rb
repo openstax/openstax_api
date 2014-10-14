@@ -64,19 +64,26 @@ module OpenStax
 
           # Process the schema_info attribute
           schema_info.each do |key, value|
-            # Handle special keys (required, definitions, type)
-            next if key == :required
-            if key == :definitions
+            # Handle special keys (required, definitions, type, enum)
+            case key
+            when :required
+              next
+            when :definitions
               definitions.merge!(value)
               next
+            when :type
+              next if attr_info[:type].nil?
+              value = value.to_s.downcase
+            when :enum
+              attr_info.delete(:type)
             end
-            value = value.to_s.downcase if key == :type
+
             # Store the schema_info k-v pair in attr_info
             attr_info[key] = value
           end
 
           # Overwrite type for collections
-          attr_info[:type] = 'array' if attr[:collection]
+          attr_info[:type] = 'array' if attr[:collection] && 
 
           # Handle nested representers
           if attr[:extend]
