@@ -73,9 +73,16 @@ module OpenStax
               next
             when :type
               next if attr_info[:type].nil?
-              value = value.to_s.downcase
             when :enum
               attr_info.delete(:type)
+            end
+
+            # Handle Procs and Uber::Callables
+            case value
+            when Proc
+              value = representer.instance_exec &value
+            when Uber::Callable
+              value = value.call(representer)
             end
 
             # Store the schema_info k-v pair in attr_info
@@ -83,7 +90,7 @@ module OpenStax
           end
 
           # Overwrite type for collections
-          attr_info[:type] = 'array' if attr[:collection] && 
+          attr_info[:type] = 'array' if attr[:collection]
 
           # Handle nested representers
           if attr[:extend]
