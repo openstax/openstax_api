@@ -80,7 +80,7 @@ module OpenStax
           # Must be able to read each record
           OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, item)
         end
-        respond_with(Lev::Outputs.new({items: relation}), {represent_with: represent_with})
+        respond_with(Lev::Outputs.new(items: relation), represent_with: represent_with)
       end
 
       def standard_sort(*args)
