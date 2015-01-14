@@ -9,16 +9,10 @@ module OpenStax
 
     module Roar
 
-      def standard_search(routine, relation, represent_with, options={})
+      def standard_search(model, routine, represent_with, options={})
         user = current_api_user
-        model_klass = relation.base_class
-        OSU::AccessPolicy.require_action_allowed!(:search, user, model_klass)
-        options = options.merge({
-          search_routine: routine,
-          search_relation: relation,
-          params: params
-        })
-        result = OpenStax::Utilities::KeywordSearchHandler.call(options)
+        OSU::AccessPolicy.require_action_allowed!(:search, user, model)
+        result = routine.call(params)
         return render_api_errors(result.errors) if result.errors.any?
         outputs = result.outputs
         outputs[:items].each do |item|
@@ -80,7 +74,8 @@ module OpenStax
           # Must be able to read each record
           OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, item)
         end
-        respond_with(Lev::Outputs.new(items: relation), represent_with: represent_with)
+        respond_with(Lev::Outputs.new(items: relation),
+                     represent_with: represent_with)
       end
 
       def standard_sort(*args)

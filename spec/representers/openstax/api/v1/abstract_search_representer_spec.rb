@@ -28,7 +28,7 @@ module OpenStax
         end
 
         it "represents search results" do
-          outputs = SearchUsers.call(User.unscoped, 'last_name:dOe').outputs
+          outputs = SearchUsers.call(query: 'last_name:dOe').outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -38,8 +38,8 @@ module OpenStax
           expect(items).to include(@jane_hash)
           expect(items).to include(@jack_hash)
 
-          outputs = SearchUsers.call(User.unscoped,
-                                     'first_name:jOhN last_name:DoE').outputs
+          outputs = SearchUsers.call(query: 'first_name:jOhN last_name:DoE')
+                               .outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -49,8 +49,9 @@ module OpenStax
           expect(items).not_to include(@jane_hash)
           expect(items).not_to include(@jack_hash)
 
-          outputs = SearchUsers.call(User.unscoped,
-                                     'first_name:JoHn,JaNe last_name:dOe').outputs
+          outputs = SearchUsers.call(
+            query: 'first_name:JoHn,JaNe last_name:dOe'
+          ).outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -62,7 +63,7 @@ module OpenStax
         end
 
         it "represents ordered results" do
-          outputs = SearchUsers.call(User.unscoped, 'username:DoE',
+          outputs = SearchUsers.call(query: 'username:DoE',
                                      order_by: 'cReAtEd_At AsC, iD')
                                .outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
@@ -74,7 +75,7 @@ module OpenStax
           expect(items[1]).to eq @jane_hash
           expect(items[2]).to eq @jack_hash
 
-          outputs = SearchUsers.call(User.unscoped, 'username:dOe',
+          outputs = SearchUsers.call(query: 'username:dOe',
                                      order_by: 'CrEaTeD_aT dEsC, Id DeSc')
                                .outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
@@ -90,7 +91,7 @@ module OpenStax
         it "represents paginated results" do
           user_count = User.count
 
-          outputs = SearchUsers.call(User.unscoped, '').outputs
+          outputs = SearchUsers.call(query: '').outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -98,7 +99,7 @@ module OpenStax
           expect(total_count).to eq user_count
           expect(items.count).to eq user_count
 
-          outputs = SearchUsers.call(User.unscoped, '', per_page: 20).outputs
+          outputs = SearchUsers.call(query: '', per_page: 20).outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
           items = response['items']
@@ -107,7 +108,7 @@ module OpenStax
           expect(items.count).to eq 20
 
           for page in 1..5
-            outputs = SearchUsers.call(User.unscoped, '',
+            outputs = SearchUsers.call(query: '',
                                        page: page, per_page: 20).outputs
             response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
             total_count = response['total_count']
@@ -117,7 +118,7 @@ module OpenStax
             expect(items.count).to eq 20
           end
 
-          outputs = SearchUsers.call(User.unscoped, '',
+          outputs = SearchUsers.call(query: '',
                                      page: 1000, per_page: 20).outputs
           response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
           total_count = response['total_count']
