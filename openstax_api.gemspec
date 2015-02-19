@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'exception_notification', '>= 4.0'
   s.add_dependency 'openstax_utilities', '>= 4.2.0'
   s.add_dependency 'lev', '>= 1.0.0'
+  s.add_dependency 'responders'
 
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'rspec-rails'

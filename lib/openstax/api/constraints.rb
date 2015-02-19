@@ -9,7 +9,7 @@ module OpenStax
       end
 
       def api_accept_header
-        "application/vnd.openstax.#{OSU::SITE_NAME}.#{@version.to_s}"
+        "application/vnd.openstax.#{@version.to_s}"
       end
       
       def matches?(req)
