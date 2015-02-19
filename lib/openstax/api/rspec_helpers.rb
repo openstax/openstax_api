@@ -39,18 +39,23 @@ module OpenStax
       end
 
       def api_request(type, action, doorkeeper_token, args={})
+        request_method = is_a_controller_spec? ?
+                           :controller_spec_api_request : 
+                           :request_spec_api_request
+        self.send(request_method, type, action, doorkeeper_token, args)
+      end
+
+      private
+
+      def controller_spec_api_request(type, action, doorkeeper_token, args={})
         raise IllegalArgument if ![:get, :post, :put, :delete, :patch, :head].include?(type)
 
-        # Add the doorkeeper token info
+        # Add the doorkeeper token info and the accept header
 
         request.env['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
           if doorkeeper_token
 
-        # Select the version of the API based on the spec metadata
-
-        version_string = self.class.metadata[:version].try(:to_s)
-        raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" if version_string.nil?
-        request.env['HTTP_ACCEPT'] = "application/vnd.accounts.openstax.#{version_string}"
+        request.env['HTTP_ACCEPT'] = http_accept_string
 
         # Set the raw post data in the request, converting to JSON if needed
 
@@ -76,6 +81,25 @@ module OpenStax
 
         # Delegate the work to the normal HTTP request helpers
         self.send(type, action, args[:parameters], args[:session], args[:flash])
+      end
+
+      def request_spec_api_request(type, route, doorkeeper_token=nil, args={})
+        http_header = {}
+        http_header['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" if doorkeeper_token.present?
+        http_header['HTTP_ACCEPT'] = http_accept_string
+
+        send(type, route, {format: :json}, http_header)
+      end
+
+      def is_a_controller_spec?
+        self.class.metadata[:type] == :controller
+      end
+
+      def http_accept_string
+        # Select the version of the API based on the spec metadata and populate the vnd string
+        version_string = self.class.metadata[:version].try(:to_s)
+        raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" if version_string.nil?
+        "application/vnd.openstax.#{version_string}"
       end
 
     end
