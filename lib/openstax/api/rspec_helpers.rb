@@ -90,7 +90,10 @@ module OpenStax
       def request_spec_api_request(type, route, token=nil, args={})
         http_header = {}
         http_header['HTTP_AUTHORIZATION'] = "Bearer #{token.token}" if token.present?
-        http_header['HTTP_ACCEPT'] = "application/vnd.openstax.v1"
+
+        version_string = self.class.metadata[:version].try(:to_s)
+        raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" if version_string.nil?
+        http_header['HTTP_ACCEPT'] = "application/vnd.openstax.#{version_string}"
 
         send(type, route, {format: :json}, http_header)
       end
