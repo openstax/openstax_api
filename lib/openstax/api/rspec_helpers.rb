@@ -39,34 +39,26 @@ module OpenStax
       end
 
       def api_request(type, action, doorkeeper_token, args={})
-        request_method = is_a_controller_spec? ?
-                           :controller_spec_api_request : 
-                           :request_spec_api_request
-        self.send(request_method, type, action, doorkeeper_token, args)
-      end
-
-      private
-
-      def controller_spec_api_request(type, action, doorkeeper_token, args={})
         raise IllegalArgument if ![:get, :post, :put, :delete, :patch, :head].include?(type)
 
-        # Add the doorkeeper token info and the accept header
+        header = is_a_controller_spec? ? request.env : {}
 
-        request.env['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
-          if doorkeeper_token
+        # Add the doorkeeper token info
+        header['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" if doorkeeper_token
 
-        request.env['HTTP_ACCEPT'] = http_accept_string
+        # Select the version of the API based on the spec metadata and populate the accept header
+        version_string = self.class.metadata[:version].try(:to_s)
+        raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" if version_string.nil?
+        header['HTTP_ACCEPT'] = "application/vnd.openstax.#{version_string}"
 
         # Set the raw post data in the request, converting to JSON if needed
-
         if args[:raw_post_data]
-          request.env['RAW_POST_DATA'] = args[:raw_post_data].is_a?(Hash) ? 
-                                         args[:raw_post_data].to_json : 
-                                         args[:raw_post_data]
+          header['RAW_POST_DATA'] = args[:raw_post_data].is_a?(Hash) ? 
+                                      args[:raw_post_data].to_json : 
+                                      args[:raw_post_data]
         end
 
         # Set the data format
-
         args[:parameters] ||= {}
         args[:parameters][:format] = 'json'
 
@@ -79,27 +71,17 @@ module OpenStax
           action = "/api#{action}" if !action.starts_with?("/api/")
         end
 
-        # Delegate the work to the normal HTTP request helpers
-        self.send(type, action, args[:parameters], args[:session], args[:flash])
+        if is_a_controller_spec?
+          self.send(type, action, args[:parameters], args[:session], args[:flash])
+        else
+          self.send(type, action, args[:parameters], header)
+        end
       end
 
-      def request_spec_api_request(type, route, doorkeeper_token=nil, args={})
-        http_header = {}
-        http_header['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" if doorkeeper_token.present?
-        http_header['HTTP_ACCEPT'] = http_accept_string
-
-        send(type, route, {format: :json}, http_header)
-      end
+      private
 
       def is_a_controller_spec?
         self.class.metadata[:type] == :controller
-      end
-
-      def http_accept_string
-        # Select the version of the API based on the spec metadata and populate the vnd string
-        version_string = self.class.metadata[:version].try(:to_s)
-        raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" if version_string.nil?
-        "application/vnd.openstax.#{version_string}"
       end
 
     end
