@@ -1,8 +1,10 @@
+sudo: false
 language: ruby
 rvm:
   - "1.9.3-p545"
+cache: bundler
 install:
-  - bundle install --without production
+  - bundle install --without production --retry=6
   - bundle exec rake db:setup
 script:
   - bundle exec rake
