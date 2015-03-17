@@ -5,6 +5,7 @@ require 'exception_notification'
 require 'openstax_utilities'
 require 'openstax/api/roar'
 require 'openstax/api/apipie'
+require 'openstax/api/responder_with_put_content'
 
 module OpenStax
   module Api

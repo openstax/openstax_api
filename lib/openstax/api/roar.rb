@@ -59,7 +59,9 @@ module OpenStax
                                                     model)
         
           if model.save
-            respond_with model, represent_with: represent_with
+            # http://stackoverflow.com/a/27413178
+            respond_with model, represent_with: represent_with,
+                                responder: ResponderWithPutContent
           else
             render_api_errors(model.errors)
           end
