@@ -2,10 +2,8 @@
 
 class ResponderWithPutContent < Roar::Rails::Responder
   def api_behavior(*args, &block)
-    if put?
-      display resource, :status => :ok
-    else
-      super
-    end
+    return display resource, :status => :ok if put? || \
+                                               (respond_to?(:patch?) && patch?)
+    super
   end
 end
