@@ -31,7 +31,8 @@ module OpenStax
 
           if model.save
             respond_with model, represent_with: represent_with,
-                                status: :created
+                                status: :created,
+                                location: [:api, model]
           else
             render_api_errors(model.errors)
           end
@@ -72,7 +73,7 @@ module OpenStax
         OSU::AccessPolicy.require_action_allowed!(:destroy,
                                                   current_api_user,
                                                   model)
-        
+
         if model.destroy
           head :no_content
         else

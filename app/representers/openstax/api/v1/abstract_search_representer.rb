@@ -10,7 +10,7 @@ module OpenStax
     module V1
       class AbstractSearchRepresenter < ::Roar::Decorator
 
-        include ::Roar::Representer::JSON
+        include ::Roar::JSON
 
         property :total_count,
                  type: Integer,

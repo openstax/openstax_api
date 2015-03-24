@@ -8,7 +8,7 @@ module OpenStax
         include OpenStax::Api::Roar
         include OpenStax::Api::Apipie
 
-        doorkeeper_for :all, :unless => :session_user?
+        before_action :doorkeeper_authorize!, :unless => :session_user?
         skip_before_filter :verify_authenticity_token, :unless => :session_user?
 
         respond_to :json
@@ -32,6 +32,12 @@ module OpenStax
 
         def current_human_user
           current_api_user.human_user
+        end
+
+        def consume!(model, options = {})
+          # Don't error out if no CONTENT_TYPE header
+          request.env['CONTENT_TYPE'] ||= 'application/json'
+          super
         end
 
         protected
