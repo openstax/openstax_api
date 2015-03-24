@@ -1,8 +1,8 @@
 require 'representable/json'
 
-class UserRepresenter < ::Roar::Decorator
+class UserRepresenter < Roar::Decorator
 
-  include Roar::Representer::JSON
+  include Roar::JSON
   
   property :username, readable: false, writeable: false,
                       schema_info: { required: true }

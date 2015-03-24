@@ -8,7 +8,7 @@ module OpenStax
         include OpenStax::Api::Roar
         include OpenStax::Api::Apipie
 
-        doorkeeper_for :all, :unless => :session_user?
+        before_action :doorkeeper_authorize!, :unless => :session_user?
         skip_before_filter :verify_authenticity_token, :unless => :session_user?
 
         respond_to :json
