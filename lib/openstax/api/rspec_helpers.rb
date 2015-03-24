@@ -62,6 +62,7 @@ module OpenStax
         # Set the data format
         args[:parameters] ||= {}
         args[:parameters][:format] = 'json'
+        header['CONTENT_TYPE'] = 'application/json'
 
         # If these helpers are used from a request spec, action can
         # be a URL fragment string -- in such a case, prepend "/api"
@@ -73,9 +74,9 @@ module OpenStax
         end
 
         if is_a_controller_spec?
-          self.send(type, action, args[:parameters], args[:session], args[:flash])
+          send(type, action, args[:parameters], args[:session], args[:flash])
         else
-          self.send(type, action, args[:parameters], header)
+          send(type, action, args[:parameters].to_json, header)
         end
       end
 
