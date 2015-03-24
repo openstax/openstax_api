@@ -34,6 +34,12 @@ module OpenStax
           current_api_user.human_user
         end
 
+        def consume!(model, options = {})
+          # Don't error out if no CONTENT_TYPE header
+          request.env['CONTENT_TYPE'] ||= 'application/json'
+          super
+        end
+
         protected
 
         def session_user?

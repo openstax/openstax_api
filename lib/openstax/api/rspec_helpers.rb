@@ -44,7 +44,8 @@ module OpenStax
         header = is_a_controller_spec? ? request.env : {}
 
         # Add the doorkeeper token info
-        header['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" if doorkeeper_token
+        header['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
+          if doorkeeper_token
 
         # Select the version of the API based on the spec metadata and populate the accept header
         version_string = self.class.metadata[:version].try(:to_s)
