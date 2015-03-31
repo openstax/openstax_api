@@ -21,7 +21,7 @@ module OpenStax
         respond_with outputs, represent_with: represent_with
       end
 
-      def standard_create(model, represent_with=nil)
+      def standard_create(model, represent_with=nil, options={})
         model.class.transaction do
           consume!(model, represent_with: represent_with)
           yield model if block_given?
@@ -31,8 +31,7 @@ module OpenStax
 
           if model.save
             respond_with model, represent_with: represent_with,
-                                status: :created,
-                                location: [:api, model]
+                                status: :created, location: options[:location]
           else
             render_api_errors(model.errors)
           end
