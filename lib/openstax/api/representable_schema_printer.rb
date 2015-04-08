@@ -50,10 +50,11 @@ module OpenStax
 
           schema[:required].push(name.to_sym) if schema_info[:required]
 
-          # Skip attr it attr includes the specified key or is "required"
+          # Skip attr if it does not have the the specified key set to false
+          # or it is explicitly "required"
           next unless [options[:include]].flatten.any?{ |inc|
             m = inc.to_s + "?"
-            attr.respond_to?(m) ? attr.send(m) : attr[inc]
+            false != ( attr.respond_to?(m) ? attr.send(m) : attr[inc] )
           } || schema_info[:required]
 
           # Guess a default type based on the attribute name
