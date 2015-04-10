@@ -13,6 +13,8 @@ module OpenStax
 
         respond_to :json
 
+        after_filter :set_date_header
+
         # Keep old current_user method so we can use it
         alias_method :current_session_user,
                      OpenStax::Api.configuration.current_user_method
@@ -44,6 +46,10 @@ module OpenStax
 
         def session_user?
           !!current_session_user && doorkeeper_token.blank?
+        end
+
+        def set_date_header
+          response.date = Time.now unless response.date?
         end
 
       end
