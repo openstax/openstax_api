@@ -5,12 +5,17 @@ module OpenStax
     module V1
       describe ApiController do
 
-        let!(:user) { FactoryGirl.create :user }
-        let!(:user_2) { FactoryGirl.create :user }
-        let!(:application) { double('Doorkeeper::Application') }
-        let!(:doorkeeper_token) { double('Doorkeeper::AccessToken') }
+        let!(:user)                     { FactoryGirl.create :user }
+        let!(:user_2)                   { FactoryGirl.create :user }
+        let!(:application)              { double('Doorkeeper::Application') }
+        let!(:doorkeeper_token)         { double('Doorkeeper::AccessToken') }
         let!(:non_doorkeeper_user_proc) { lambda { user } }
-        let!(:controller) { ApiController.new }
+        let!(:controller)               { ApiController.new }
+        let!(:dummy_controller)         {
+          c = ::Api::V1::DummyController.new
+          c.response = ActionDispatch::TestResponse.new
+          c
+        }
 
         context 'no authentication' do
           before (:each) do
@@ -88,6 +93,24 @@ module OpenStax
             expect(controller.current_application).to eq application
             expect(controller.current_human_user).to eq user
             expect(controller.current_session_user).to eq user_2
+          end
+        end
+
+        context 'date' do
+          before(:each) do
+            instance_variable_set('@controller', dummy_controller)
+          end
+
+          it 'sets the Date header for successful API calls' do
+            @controller.present_user = user
+            get 'dummy'
+            expect(Time.parse(response.headers['Date'])).to be_within(1.second).of(Time.now)
+          end
+
+          it 'does not set the Date header for unsuccessful API calls' do
+            get 'dummy'
+            expect(response.headers['WWW-Authenticate']).to include "error=\"invalid_token\""
+            expect(response.headers).not_to have_key('Date')
           end
         end
 
