@@ -36,9 +36,10 @@ module OpenStax
         end
       end
 
-      def standard_read(model, represent_with=nil)
+      def standard_read(model, represent_with=nil, use_timestamp_for_cache=false)
         OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, model)
-        respond_with model, represent_with: represent_with
+        respond_with model, represent_with: represent_with \
+          if !use_timestamp_for_cache || stale?(model)
       end
 
       def standard_update(model, represent_with=nil)
