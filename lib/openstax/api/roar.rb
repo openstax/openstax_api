@@ -25,9 +25,7 @@ module OpenStax
         model.class.transaction do
           consume!(model, represent_with: represent_with)
           yield model if block_given?
-          OSU::AccessPolicy.require_action_allowed!(:create,
-                                                    current_api_user,
-                                                    model)
+          OSU::AccessPolicy.require_action_allowed!(:create, current_api_user, model)
 
           if model.save
             respond_with model, represent_with: represent_with,
@@ -38,30 +36,24 @@ module OpenStax
         end
       end
 
-      def standard_read(model, represent_with=nil)
-        OSU::AccessPolicy.require_action_allowed!(:read,
-                                                  current_api_user,
-                                                  model)
-        respond_with model, represent_with: represent_with
+      def standard_read(model, represent_with=nil, use_timestamp_for_cache=false)
+        OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, model)
+        respond_with model, represent_with: represent_with \
+          if !use_timestamp_for_cache || stale?(model)
       end
 
       def standard_update(model, represent_with=nil)
         # Must be able to update the record before and after the update itself
-        OSU::AccessPolicy.require_action_allowed!(:update,
-                                                  current_api_user,
-                                                  model)
+        OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
 
         model.class.transaction do
           consume!(model, represent_with: represent_with)
           yield model if block_given?
-          OSU::AccessPolicy.require_action_allowed!(:update,
-                                                    current_api_user,
-                                                    model)
+          OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
         
           if model.save
             # http://stackoverflow.com/a/27413178
-            respond_with model, represent_with: represent_with,
-                                responder: ResponderWithPutContent
+            respond_with model, represent_with: represent_with, responder: ResponderWithPutContent
           else
             render_api_errors(model.errors)
           end
@@ -69,9 +61,7 @@ module OpenStax
       end
 
       def standard_destroy(model)
-        OSU::AccessPolicy.require_action_allowed!(:destroy,
-                                                  current_api_user,
-                                                  model)
+        OSU::AccessPolicy.require_action_allowed!(:destroy, current_api_user, model)
 
         if model.destroy
           head :no_content
@@ -82,44 +72,34 @@ module OpenStax
 
       def standard_index(relation, represent_with)
         model_klass = relation.base_class
-        OSU::AccessPolicy.require_action_allowed!(:index,
-                                                  current_api_user,
-                                                  model_klass)
+        OSU::AccessPolicy.require_action_allowed!(:index, current_api_user, model_klass)
         relation.each do |item|
           # Must be able to read each record
-          OSU::AccessPolicy.require_action_allowed!(:read,
-                                                    current_api_user,
-                                                    item)
+          OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, item)
         end
-        respond_with(Lev::Outputs.new(items: relation),
-                     represent_with: represent_with)
+        respond_with(Lev::Outputs.new(items: relation), represent_with: represent_with)
       end
 
       def standard_sort(*args)
         raise NotYetImplemented
       end
 
-      def standard_nested_create(model, container_association,
-                                 container, represent_with=nil)
+      def standard_nested_create(model, container_association, container, represent_with=nil)
         # Must be able to update the container
-        OSU::AccessPolicy.require_action_allowed!(:update,
-                                                  current_api_user,
-                                                  container)
+        OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, container)
         model.send("#{container_association.to_s}=", container)
 
         standard_create(model, represent_with)
       end
 
       def render_api_errors(errors, status = :unprocessable_entity)
-        hash = {status: Rack::Utils.status_code(status)}
+        hash = { status: Rack::Utils.status_code(status) }
         case errors
         when ActiveModel::Errors, Lev::BetterActiveModelErrors
           hash[:errors] = []
           errors.each do |attribute, message|
             hash[:errors] << {
-              code: "#{attribute.to_s}_#{
-                      message.to_s.gsub(/[\s-]/, '_').gsub(/[^\w]/, '')
-                    }",
+              code: "#{attribute.to_s}_#{message.to_s.gsub(/[\s-]/, '_').gsub(/[^\w]/, '')}",
               message: errors.full_message(attribute, message)
             }
           end
