@@ -13,6 +13,7 @@ module OpenStax
 
         respond_to :json
 
+        before_filter :force_json_content_type
         after_filter :set_date_header
 
         # Keep old current_user method so we can use it
@@ -36,12 +37,6 @@ module OpenStax
           current_api_user.human_user
         end
 
-        def consume!(model, options = {})
-          # Don't error out if no CONTENT_TYPE header
-          request.env['CONTENT_TYPE'] ||= 'application/json'
-          super
-        end
-
         protected
 
         def session_user?
@@ -50,6 +45,12 @@ module OpenStax
 
         def set_date_header
           response.date = Time.now unless response.date?
+        end
+
+        def force_json_content_type
+          # Force JSON content_type
+          request.env['CONTENT_TYPE'] = 'application/json'
+          request.env['action_dispatch.request.content_type'] = 'application/json'
         end
 
       end
