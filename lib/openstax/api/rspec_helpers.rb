@@ -90,8 +90,12 @@ module OpenStax
   end
 end
 
-if defined?(RSpec)
+# Add the helpers to RSpec but don't error out if the rspec gem is not present
+begin
+  require 'rspec/core'
+
   RSpec.configure do |c|
     c.include OpenStax::Api::RSpecHelpers
   end
+rescue LoadError
 end
