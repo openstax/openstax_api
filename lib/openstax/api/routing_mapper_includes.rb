@@ -14,8 +14,7 @@ module OpenStax
           scope(except: [:new, :edit],
                 module: version,
                 constraints: constraints) do
-            get '/', to: '/apipie/apipies#index', defaults: {format: 'html',
-                                                             version: version.to_s}
+            get '/', to: '/apipie/apipies#index', defaults: {format: 'html', version: version.to_s}
 
             yield
 
