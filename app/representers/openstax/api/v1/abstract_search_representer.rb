@@ -25,18 +25,31 @@ module OpenStax
         collection :items,
                    readable: true,
                    writeable: false,
+                   exec_context: :decorator,
                    schema_info: {
                      required: true,
                      description: "The items matching the query or a subset thereof when paginating"
                    }
 
+        def items
+          return represented.items if represented.respond_to?(:items)
+          return represented[:items] if represented.respond_to?(:has_key?) && \
+                                        represented.has_key?(:items)
+          represented
+        end
+
         def total_count
-          return represented[:total_count] if represented[:total_count]
-          case represented[:items]
-          when ActiveRecord::Relation
-            represented[:items].limit(nil).offset(nil).count
-          when Array
-            represented[:items].count
+          return represented.total_count if represented.respond_to?(:total_count)
+          return represented[:total_count] if represented.respond_to?(:has_key?) && \
+                                              represented.has_key?(:total_count)
+
+          @items = items
+          if @items.respond_to?(:length)
+            if @items.respond_to?(:limit) && @items.respond_to?(:offset)
+              @items.limit(nil).offset(nil).length
+            else
+              @items.length
+            end
           else
             1
           end
