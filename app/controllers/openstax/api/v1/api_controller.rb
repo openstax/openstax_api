@@ -14,11 +14,12 @@ module OpenStax
         before_filter :force_json_content_type
         after_filter :set_date_header
 
-        # Doorkeeper is used and CSRF protection is disabled only if a token is present
+        # Doorkeeper is used only if a token is present
+        # Access policies should be used to limit access to anonymous users
         before_filter :doorkeeper_authorize!, if: :token_user?
-        skip_before_filter :verify_authenticity_token, if: :token_user?
 
-        # CORS is enabled unless the user is logged in via a cookie
+        # Except for users logged in via a cookie, we can disable CSRF protection and enable CORS
+        skip_before_filter :verify_authenticity_token, unless: :session_user?
         before_filter :set_cors_preflight_headers, unless: :session_user?
         after_filter :set_cors_headers, unless: :session_user?
 
