@@ -106,11 +106,29 @@ module OpenStax
             get 'dummy'
             expect(Time.parse(response.headers['Date'])).to be_within(1.second).of(Time.now)
           end
+        end
 
-          it 'does not set the Date header for unsuccessful API calls' do
+        context 'cors' do
+          before(:each) do
+            instance_variable_set('@controller', dummy_controller)
+          end
+
+          it 'sets the CORS headers for anonymous users' do
             get 'dummy'
-            expect(response.headers['WWW-Authenticate']).to include "error=\"invalid_token\""
-            expect(response.headers).not_to have_key('Date')
+            expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+          end
+
+          it 'sets the CORS headers for token users' do
+            token = Doorkeeper::AccessToken.create!.token
+            @request.headers['Authorization'] = "Bearer #{token}"
+            get 'dummy'
+            expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+          end
+
+          it 'does not set the CORS headers for session users' do
+            @controller.present_user = user
+            get 'dummy'
+            expect(response.headers['Access-Control-Allow-Origin']).to be_nil
           end
         end
 
