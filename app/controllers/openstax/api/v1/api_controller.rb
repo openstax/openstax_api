@@ -8,6 +8,8 @@ module OpenStax
         include OpenStax::Api::Roar
         include OpenStax::Api::Apipie
 
+        protect_from_forgery
+
         respond_to :json
 
         # Always force JSON requests and send the Date header in the response
