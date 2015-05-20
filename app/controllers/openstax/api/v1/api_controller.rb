@@ -8,7 +8,7 @@ module OpenStax
         include OpenStax::Api::Roar
         include OpenStax::Api::Apipie
 
-        protect_from_forgery
+        protect_from_forgery with: :exception
 
         respond_to :json
 
