@@ -46,7 +46,7 @@ module OpenStax
         # Must be able to update the record before and after the update itself
         OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
 
-        model.class.transaction do
+        model.with_lock do
           consume!(model, represent_with: represent_with)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
