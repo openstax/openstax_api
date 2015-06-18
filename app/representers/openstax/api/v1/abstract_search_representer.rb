@@ -32,10 +32,10 @@ module OpenStax
                    }
 
         def items
-          return represented.items if represented.respond_to?(:items)
-          return represented[:items] if represented.respond_to?(:has_key?) && \
-                                        represented.has_key?(:items)
-          represented
+          return represented.items.to_a.uniq if represented.respond_to?(:items)
+          return represented[:items].to_a.uniq if represented.respond_to?(:has_key?) && \
+                                                  represented.has_key?(:items)
+          represented.to_a.uniq
         end
 
         def total_count
