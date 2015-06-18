@@ -128,6 +128,16 @@ module OpenStax
           expect(items.count).to eq 0
         end
 
+        it "removes duplicate search results" do
+          outputs = Hashie::Mash.new(items: [@john_hash, @john_hash, @jane_hash])
+          response = JSON.parse(UserSearchRepresenter.new(outputs).to_json)
+          total_count = response['total_count']
+          items = response['items']
+
+          expect(total_count).to eq 2
+          expect(items.count).to eq 2
+        end
+
       end
     end
   end
