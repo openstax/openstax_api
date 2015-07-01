@@ -12,7 +12,7 @@ module OpenStax
       def standard_search(model, routine, represent_with, options={})
         user = current_api_user
         OSU::AccessPolicy.require_action_allowed!(:search, user, model)
-        result = routine.call(params)
+        result = routine.call(params, options)
         return render_api_errors(result.errors) if result.errors.any?
         outputs = result.outputs
         outputs[:items].each do |item|
