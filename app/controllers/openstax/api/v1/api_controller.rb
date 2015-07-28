@@ -75,6 +75,7 @@ module OpenStax
         def set_cors_preflight_headers
           headers['Access-Control-Allow-Origin'] = '*'
           headers['Access-Control-Allow-Methods'] = 'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS'
+          headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-Prototype-Version, Token'
           headers['Access-Control-Max-Age'] = '86400'
         end
 
