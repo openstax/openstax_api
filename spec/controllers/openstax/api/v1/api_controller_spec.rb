@@ -116,6 +116,7 @@ module OpenStax
           it 'sets the CORS headers for anonymous users' do
             get 'dummy'
             expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+            expect(response.headers['Access-Control-Allow-Credentials']).to be_nil
           end
 
           it 'sets the CORS headers for token users' do
@@ -123,12 +124,14 @@ module OpenStax
             @request.headers['Authorization'] = "Bearer #{token}"
             get 'dummy'
             expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+            expect(response.headers['Access-Control-Allow-Credentials']).to be_nil
           end
 
-          it 'does not set the CORS headers for session users' do
+          it 'sets the CORS headers for session users (the browser should block the request due to no Access-Control-Allow-Credentials header)' do
             @controller.present_user = user
             get 'dummy'
-            expect(response.headers['Access-Control-Allow-Origin']).to be_nil
+            expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+            expect(response.headers['Access-Control-Allow-Credentials']).to be_nil
           end
         end
 
