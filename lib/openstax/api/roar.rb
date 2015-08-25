@@ -63,10 +63,12 @@ module OpenStax
       def standard_destroy(model)
         OSU::AccessPolicy.require_action_allowed!(:destroy, current_api_user, model)
 
-        if model.destroy
-          head :no_content
-        else
-          render_api_errors(model.errors)
+        model.with_lock do
+          if model.destroy
+            head :no_content
+          else
+            render_api_errors(model.errors)
+          end
         end
       end
 
