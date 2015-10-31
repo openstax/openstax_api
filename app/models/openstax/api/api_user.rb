@@ -34,8 +34,8 @@ module OpenStax
         # If we have a doorkeeper_token, derive the User from it.
         # If not, we're in case #1 above and the User should be
         # retrieved from the non_doorkeeper_user_proc.
-        @user ||= @doorkeeper_token ? USER_CLASS.where(
-                    :id => @doorkeeper_token.try(:resource_owner_id)).first : \
+        @user ||= @doorkeeper_token ? \
+                    USER_CLASS.find_by(id: @doorkeeper_token.try(:resource_owner_id)) : \
                     @non_doorkeeper_user_proc.call
       end
 
