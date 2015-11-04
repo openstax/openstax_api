@@ -33,12 +33,15 @@ module OpenStax
       #
       # routing_error_app is a Rack application that responds to routing errors for the API
       #
+      # validate_cors_origin is a Proc that is called with the reqested origin for CORS requests.
+      # The proc should return true/false to indicate the validity of the request's origin
       class Configuration
         attr_accessor :user_class_name
         attr_accessor :current_user_method
         attr_accessor :routing_error_app
-        
-        def initialize      
+        attr_accessor :validate_cors_origin
+
+        def initialize
           @user_class_name = 'User'
           @current_user_method = 'current_user'
           @routing_error_app = lambda { |env|

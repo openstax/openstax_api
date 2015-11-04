@@ -3,7 +3,7 @@ module OpenStax
     module V1
 
       class ApiController < ActionController::Base
-  
+
         include ::Roar::Rails::ControllerAdditions
         include OpenStax::Api::Roar
         include OpenStax::Api::Apipie
@@ -73,14 +73,23 @@ module OpenStax
         end
 
         def set_cors_preflight_headers
-          headers['Access-Control-Allow-Origin'] = '*'
+          headers['Access-Control-Allow-Origin'] = validated_cors_origin
           headers['Access-Control-Allow-Methods'] = 'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS'
-          headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-Prototype-Version, X-CSRF-Token, Token'
+          headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-Prototype-Version, X-CSRF-Token, Token, Authorization'
           headers['Access-Control-Max-Age'] = '86400'
         end
 
         def set_cors_headers
-          headers['Access-Control-Allow-Origin'] = '*'
+          headers['Access-Control-Allow-Origin'] = validated_cors_origin
+        end
+
+        def validated_cors_origin
+          if OpenStax::Api.configuration.validate_cors_origin &&
+             OpenStax::Api.configuration.validate_cors_origin[ request ]
+            request.headers["HTTP_ORIGIN"]
+          else
+            '' # an empty string will disallow any access
+          end
         end
 
       end

@@ -108,14 +108,14 @@ module OpenStax
           end
         end
 
-        context 'cors' do
+        context 'cors without origin configured' do
           before(:each) do
             instance_variable_set('@controller', dummy_controller)
           end
 
           it 'sets the CORS headers for anonymous users' do
             get 'dummy'
-            expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+            expect(response.headers['Access-Control-Allow-Origin']).to eq ''
             expect(response.headers['Access-Control-Allow-Credentials']).to be_nil
           end
 
@@ -123,16 +123,41 @@ module OpenStax
             token = Doorkeeper::AccessToken.create!.token
             @request.headers['Authorization'] = "Bearer #{token}"
             get 'dummy'
-            expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+            expect(response.headers['Access-Control-Allow-Origin']).to eq ''
             expect(response.headers['Access-Control-Allow-Credentials']).to be_nil
           end
 
           it 'sets the CORS headers for session users (the browser should block the request due to no Access-Control-Allow-Credentials header)' do
             @controller.present_user = user
             get 'dummy'
-            expect(response.headers['Access-Control-Allow-Origin']).to eq '*'
+            expect(response.headers['Access-Control-Allow-Origin']).to eq ''
             expect(response.headers['Access-Control-Allow-Credentials']).to be_nil
           end
+        end
+
+        context 'cors with origin configured' do
+          before(:each) do
+            instance_variable_set('@controller', dummy_controller)
+            OpenStax::Api.configuration.validate_cors_origin = lambda{ |request|
+              request.headers["HTTP_ORIGIN"] == @valid_origin
+            }
+          end
+          after(:each) { OpenStax::Api.configuration.validate_cors_origin = nil }
+
+          it 'when configured proc is true, it sets the origin to whatever was reqeusted' do
+            @valid_origin = 'http://good-host'
+            @request.headers['HTTP_ORIGIN'] = @valid_origin
+            get 'dummy'
+            expect(response.headers['Access-Control-Allow-Origin']).to eq @valid_origin
+          end
+
+          it 'clears the headers if the configured proc is falsy' do
+            @valid_origin = 'http://good-host'
+            @request.headers['HTTP_ORIGIN'] = 'http://evil-host'
+            get 'dummy'
+            expect(response.headers['Access-Control-Allow-Origin']).to eq ''
+          end
+
         end
 
       end
