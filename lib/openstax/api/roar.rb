@@ -1,4 +1,4 @@
-# Copyright 2011-2014 Rice University. Licensed under the Affero General Public 
+# Copyright 2011-2014 Rice University. Licensed under the Affero General Public
 # License version 3 or later.  See the COPYRIGHT file for details.
 
 require 'openstax_utilities'
@@ -18,42 +18,43 @@ module OpenStax
         outputs[:items].each do |item|
           OSU::AccessPolicy.require_action_allowed!(:read, user, item)
         end
-        respond_with outputs, represent_with: represent_with
+        respond_with outputs, options.merge(represent_with: represent_with)
       end
 
       def standard_create(model, represent_with=nil, options={})
+        represent_options = options.merge(represent_with: represent_with)
         model.class.transaction do
-          consume!(model, represent_with: represent_with)
+          consume!(model, represent_options)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:create, current_api_user, model)
 
           if model.save
-            respond_with model, represent_with: represent_with,
-                                status: :created, location: options[:location]
+            respond_with model, {status: :created, location: nil}.merge(represent_options)
           else
             render_api_errors(model.errors)
           end
         end
       end
 
-      def standard_read(model, represent_with=nil, use_timestamp_for_cache=false)
+      def standard_read(model, represent_with=nil, use_timestamp_for_cache=false, options={})
         OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, model)
-        respond_with model, represent_with: represent_with \
+        respond_with model, options.merge(represent_with: represent_with) \
           if !use_timestamp_for_cache || stale?(model, template: false)
       end
 
-      def standard_update(model, represent_with=nil)
+      def standard_update(model, represent_with=nil, options={})
         # Must be able to update the record before and after the update itself
         OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
 
+        represent_options = options.merge(represent_with: represent_with)
         model.with_lock do
-          consume!(model, represent_with: represent_with)
+          consume!(model, represent_options)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
-        
+
           if model.save
             # http://stackoverflow.com/a/27413178
-            respond_with model, represent_with: represent_with, responder: ResponderWithPutContent
+            respond_with model, {responder: ResponderWithPutContent}.merge(represent_options)
           else
             render_api_errors(model.errors)
           end
@@ -72,26 +73,28 @@ module OpenStax
         end
       end
 
-      def standard_index(relation, represent_with)
+      def standard_index(relation, represent_with, options={})
         model_klass = relation.base_class
         OSU::AccessPolicy.require_action_allowed!(:index, current_api_user, model_klass)
         relation.each do |item|
           # Must be able to read each record
           OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, item)
         end
-        respond_with(Lev::Outputs.new(items: relation), represent_with: represent_with)
+        respond_with(Lev::Outputs.new(items: relation),
+                     options.merge(represent_with: represent_with))
       end
 
       def standard_sort(*args)
         raise NotYetImplemented
       end
 
-      def standard_nested_create(model, container_association, container, represent_with=nil)
+      def standard_nested_create(model, container_association, container,
+                                 represent_with=nil, options={})
         # Must be able to update the container
         OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, container)
         model.send("#{container_association.to_s}=", container)
 
-        standard_create(model, represent_with)
+        standard_create(model, represent_with, options)
       end
 
       def render_api_errors(errors, status = :unprocessable_entity)
@@ -116,7 +119,7 @@ module OpenStax
         end
         render json: hash, status: status
       end
-      
+
     end
 
   end
