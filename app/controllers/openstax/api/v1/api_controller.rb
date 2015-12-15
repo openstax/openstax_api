@@ -12,8 +12,14 @@ module OpenStax
 
         respond_to :json
 
+        # after_filters are in place to make sure certain things are set how we
+        # want even if something else goes on during the request.  These filters
+        # are also paired with before_filters in case an exception prevents
+        # normal action completion.
+
         # Always force JSON requests and send the Date header in the response
         before_filter :force_json_content_type
+        before_filter :set_date_header
         after_filter :set_date_header
 
         # Doorkeeper is used only if a token is present
@@ -24,6 +30,7 @@ module OpenStax
         skip_before_filter :verify_authenticity_token, unless: :session_user?
         skip_before_filter :verify_authenticity_token, only: :options
         before_filter :set_cors_preflight_headers, only: :options
+        before_filter :set_cors_headers
         after_filter :set_cors_headers
 
         # Keep old current_user method so we can use it
