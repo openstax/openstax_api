@@ -22,7 +22,7 @@ module OpenStax
             controller.doorkeeper_token = nil
             controller.present_user = nil
           end
-          
+
           it 'has no human_user and no application' do
             expect(controller.send :session_user?).to eq false
             expect(controller.current_application).to be_nil
@@ -36,7 +36,7 @@ module OpenStax
             controller.doorkeeper_token = nil
             controller.present_user = user
           end
-          
+
           it 'has a human_user but no application' do
             expect(controller.send :session_user?).to eq true
             expect(controller.current_application).to be_nil
@@ -50,7 +50,7 @@ module OpenStax
             controller.doorkeeper_token = doorkeeper_token
             controller.present_user = nil
           end
-          
+
           it 'has a human_user from token and an application' do
             allow(doorkeeper_token).to receive(:application).and_return(application)
             allow(doorkeeper_token).to receive(:resource_owner_id).and_return(user.id)
@@ -67,7 +67,7 @@ module OpenStax
             controller.doorkeeper_token = doorkeeper_token
             controller.present_user = nil
           end
-          
+
           it 'has an application but no human_user' do
             allow(doorkeeper_token).to receive(:application).and_return(application)
             allow(doorkeeper_token).to receive(:resource_owner_id).and_return(nil)
@@ -144,11 +144,21 @@ module OpenStax
           end
           after(:each) { OpenStax::Api.configuration.validate_cors_origin = nil }
 
-          it 'when configured proc is true, it sets the origin to whatever was reqeusted' do
-            @valid_origin = 'http://good-host'
-            @request.headers['HTTP_ORIGIN'] = @valid_origin
-            get 'dummy'
-            expect(response.headers['Access-Control-Allow-Origin']).to eq @valid_origin
+          context 'when configured proc is true' do
+            before(:each) do
+              @valid_origin = 'http://good-host'
+              @request.headers['HTTP_ORIGIN'] = @valid_origin
+            end
+
+            it 'sets the origin to whatever was reqeusted' do
+              get 'dummy'
+              expect(response.headers['Access-Control-Allow-Origin']).to eq @valid_origin
+            end
+
+            it 'sets the origin to whatever was requested even if there was an exception raised' do
+              get 'explode'
+              expect(response.headers['Access-Control-Allow-Origin']).to eq @valid_origin
+            end
           end
 
           it 'clears the headers if the configured proc is falsy' do
@@ -157,6 +167,7 @@ module OpenStax
             get 'dummy'
             expect(response.headers['Access-Control-Allow-Origin']).to eq ''
           end
+
 
         end
 
