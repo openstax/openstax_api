@@ -24,7 +24,7 @@ module OpenStax
       def standard_create(model, represent_with=nil, options={})
         represent_options = options.merge(represent_with: represent_with)
         model.class.transaction do
-          consume!(model, represent_options)
+          consume!(model, represent_options.dup)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:create, current_api_user, model)
 
@@ -48,7 +48,7 @@ module OpenStax
 
         represent_options = options.merge(represent_with: represent_with)
         model.with_lock do
-          consume!(model, represent_options)
+          consume!(model, represent_options.dup)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
 
