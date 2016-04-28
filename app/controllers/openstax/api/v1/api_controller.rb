@@ -76,7 +76,7 @@ module OpenStax
         end
 
         def set_date_header
-          response.date = Time.now unless response.date?
+          response.date = Time.now if response.respond_to?(:date) and not response.date?
         end
 
         def set_cors_preflight_headers
