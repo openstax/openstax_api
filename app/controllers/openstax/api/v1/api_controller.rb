@@ -29,9 +29,8 @@ module OpenStax
         # Except for users logged in via a cookie, we can disable CSRF protection and enable CORS
         skip_before_filter :verify_authenticity_token, unless: :session_user?
         skip_before_filter :verify_authenticity_token, only: :options
-        before_filter :set_cors_preflight_headers, only: :options
-        before_filter :set_cors_headers
-        after_filter :set_cors_headers
+
+        after_filter :maybe_set_cors_headers
 
         # Keep old current_user method so we can use it
         alias_method :current_session_user, OpenStax::Api.configuration.current_user_method
@@ -79,15 +78,14 @@ module OpenStax
           response.date = Time.now if response.respond_to?(:date) and not response.date?
         end
 
-        def set_cors_preflight_headers
+        def maybe_set_cors_headers
+          # only set headers if browser indicates it's using CORS by setting the ORIGIN
+          return unless request.headers["HTTP_ORIGIN"]
           headers['Access-Control-Allow-Origin'] = validated_cors_origin
+          headers['Access-Control-Allow-Credentials'] = 'true'
           headers['Access-Control-Allow-Methods'] = 'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS'
           headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-Prototype-Version, X-CSRF-Token, Token, Authorization, Content-Type'
           headers['Access-Control-Max-Age'] = '86400'
-        end
-
-        def set_cors_headers
-          headers['Access-Control-Allow-Origin'] = validated_cors_origin
         end
 
         def validated_cors_origin
