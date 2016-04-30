@@ -80,8 +80,6 @@ module OpenStax
         end
 
         def maybe_set_cors_headers
-          p request
-          p request.headers["HTTP_ORIGIN"]
           # only set headers if browser indicates it's using CORS by setting the ORIGIN
           return unless request.headers["HTTP_ORIGIN"]
           headers['Access-Control-Allow-Origin'] = validated_cors_origin
