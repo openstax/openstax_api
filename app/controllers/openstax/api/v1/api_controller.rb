@@ -27,7 +27,7 @@ module OpenStax
         before_filter :doorkeeper_authorize!, if: :token_user?
 
         # Except for users logged in via a cookie, we can disable CSRF protection and enable CORS
-        skip_before_filter :verify_authenticity_token, unless: :session_user?
+        skip_before_filter :verify_authenticity_token, unless: :local_session_user?
         skip_before_filter :authenticate_user!, only: :options
         skip_before_filter :verify_authenticity_token, only: :options
 
@@ -57,6 +57,10 @@ module OpenStax
         end
 
         protected
+
+        def local_session_user?
+          session_user? && !request.headers.has_key?("HTTP_ORIGIN")
+        end
 
         def session_user?
           !current_session_user.nil? && \
