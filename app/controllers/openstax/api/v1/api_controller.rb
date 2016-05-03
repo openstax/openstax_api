@@ -58,6 +58,7 @@ module OpenStax
 
         protected
 
+        # A session user who is not using CORS
         def local_session_user?
           session_user? && !request.headers.include?("HTTP_ORIGIN")
         end
@@ -79,6 +80,7 @@ module OpenStax
           request.env['action_dispatch.request.content_type'] = 'application/json'
         end
 
+        # Rails 3.x lacks response.date.  Remove `respond_to?` check after update
         def set_date_header
           response.date = Time.now if response.respond_to?(:date) and not response.date?
         end
@@ -90,7 +92,7 @@ module OpenStax
           headers['Access-Control-Allow-Credentials'] = 'true'
           headers['Access-Control-Allow-Methods'] = 'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS'
           headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-Prototype-Version, X-CSRF-Token, Token, Authorization, Content-Type'
-          headers['Access-Control-Max-Age'] = '8' #6400'
+          headers['Access-Control-Max-Age'] = '86400'
         end
 
         def validated_cors_origin
