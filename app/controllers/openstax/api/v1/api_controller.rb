@@ -59,7 +59,7 @@ module OpenStax
         protected
 
         def local_session_user?
-          session_user? && !request.headers.has_key?("HTTP_ORIGIN")
+          session_user? && !request.headers.include?("HTTP_ORIGIN")
         end
 
         def session_user?
