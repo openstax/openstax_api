@@ -31,7 +31,7 @@ module OpenStax
         skip_before_filter :authenticate_user!, only: :options
         skip_before_filter :verify_authenticity_token, only: :options
 
-        after_filter  :maybe_set_cors_headers
+        before_filter  :maybe_set_cors_headers
 
         # Keep old current_user method so we can use it
         alias_method :current_session_user, OpenStax::Api.configuration.current_user_method
