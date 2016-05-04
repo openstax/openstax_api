@@ -37,7 +37,7 @@ module OpenStax
         alias_method :current_session_user, OpenStax::Api.configuration.current_user_method
 
         # Ensure we will never again confuse human users and api users
-        # undef_method OpenStax::Api.configuration.current_user_method
+        undef_method OpenStax::Api.configuration.current_user_method
 
         # Always return an ApiUser
         def current_api_user
