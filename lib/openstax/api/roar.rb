@@ -41,8 +41,8 @@ module OpenStax
       end
 
       def standard_create(model, represent_with=nil, options={})
-        represent_with_options = options.merge(represent_with: represent_with)
         create_options = { status: :created, location: nil }
+        represent_with_options = options.merge(represent_with: represent_with)
 
         model.class.transaction do
           consume!(model, represent_with_options.dup)
@@ -80,8 +80,8 @@ module OpenStax
         # Must be able to update the record before and after the update itself
         OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
 
+        responder_options = { responder: ResponderWithPutPatchDeleteContent }
         represent_with_options = options.merge(represent_with: represent_with)
-        put_and_patch_options = { responder: ResponderWithPutAndPatchContent }
 
         model.with_lock do
           consume!(model, represent_with_options.dup)
@@ -90,7 +90,7 @@ module OpenStax
 
           if model.save
             # http://stackoverflow.com/a/27413178
-            respond_with model, put_and_patch_options.merge(represent_with_options)
+            respond_with model, responder_options.merge(represent_with_options)
           else
             render_api_errors(model.errors)
           end
@@ -104,11 +104,13 @@ module OpenStax
                                  message: "#{model.model_name.human} is already deleted") \
           if model.respond_to?(:deleted?) && model.deleted?
 
+        responder_options = { responder: ResponderWithPutPatchDeleteContent }
         represent_with_options = options.merge(represent_with: represent_with)
 
         model.with_lock do
           if model.destroy
-            respond_with model, represent_with_options
+            model.clear_association_cache
+            respond_with model, responder_options.merge(represent_with_options)
           else
             render_api_errors(model.errors)
           end
@@ -122,12 +124,13 @@ module OpenStax
                                  message: "#{model.model_name.human} is not deleted") \
           if !model.respond_to?(:deleted?) || !model.deleted?
 
+        responder_options = { responder: ResponderWithPutPatchDeleteContent }
         represent_with_options = options.merge(represent_with: represent_with)
-        put_and_patch_options = { responder: ResponderWithPutAndPatchContent }
 
         model.with_lock do
           if model.restore
-            respond_with model, put_and_patch_options.merge(represent_with_options)
+            model.clear_association_cache
+            respond_with model, responder_options.merge(represent_with_options)
           else
             render_api_errors(model.errors)
           end
