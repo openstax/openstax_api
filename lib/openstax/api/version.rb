@@ -1,5 +1,5 @@
 module OpenStax
   module Api
-    VERSION = "6.1.5"
+    VERSION = "7.0.0"
   end
 end
