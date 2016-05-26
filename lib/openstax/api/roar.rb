@@ -124,11 +124,13 @@ module OpenStax
                                  message: "#{model.model_name.human} is not deleted") \
           if !model.respond_to?(:deleted?) || !model.deleted?
 
+        recursive = options.has_key?(:recursive) ? options[:recursive] : true
+
         responder_options = { responder: ResponderWithPutPatchDeleteContent }
-        represent_with_options = options.merge(represent_with: represent_with)
+        represent_with_options = options.except(:recursive).merge(represent_with: represent_with)
 
         model.with_lock do
-          if model.restore
+          if model.restore(recursive: recursive)
             model.clear_association_cache
             respond_with model, responder_options.merge(represent_with_options)
           else
