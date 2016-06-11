@@ -67,13 +67,11 @@ module OpenStax
         standard_create(model, represent_with, options)
       end
 
-      def standard_read(model, represent_with=nil, use_timestamp_for_cache=false, options={})
+      def standard_read(model, represent_with=nil, enable_caching=true, options={})
         OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, model)
 
-        represent_with_options = options.merge(represent_with: represent_with)
-
-        respond_with model, represent_with_options \
-          if !use_timestamp_for_cache || stale?(model, template: false)
+        respond_with model, options.merge(represent_with: represent_with) \
+          if !enable_caching || stale?(model, template: false)
       end
 
       def standard_update(model, represent_with=nil, options={})
