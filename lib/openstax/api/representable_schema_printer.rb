@@ -40,27 +40,25 @@ module OpenStax
       # Helper function for json_schema
       def self.json_object(representer, definitions, options = {})
         # Initialize the schema
-        schema = { type: :object, required: [], properties: {},
-                   additionalProperties: false }
+        schema = { type: :object, required: [], properties: {}, additionalProperties: false }
 
         representer.representable_attrs.each do |attr|
           # Handle some common attributes (as, schema_info, required)
-          name = attr[:as].evaluate(representer)
+          name = attr[:as].blank? ? attr[:name] : attr[:as].evaluate(representer) rescue attr[:name]
           schema_info = attr[:schema_info] || {}
 
           schema[:required].push(name.to_sym) if schema_info[:required]
 
           # Skip attr if it does not have the the specified key set to false
           # or it is explicitly "required"
-          next unless [options[:include]].flatten.any?{ |inc|
+          next unless [options[:include]].flatten.any? do |inc|
             m = inc.to_s + "?"
-            false != ( attr.respond_to?(m) ? attr.send(m) : attr[inc] )
-          } || schema_info[:required]
+            (attr.respond_to?(m) ? attr.send(m) : attr[inc]) != false
+          end || schema_info[:required]
 
           # Guess a default type based on the attribute name
-          type = attr[:type].to_s.downcase
-          type = type.blank? ? \
-                 (name.end_with?('id') ? :integer : :string) : type
+          type = attr[:type].blank? ? (name.end_with?('id') ? :integer : :string) :
+                                      attr[:type].to_s.downcase
           attr_info ||= { type: type }
 
           # Process the schema_info attribute
@@ -102,11 +100,12 @@ module OpenStax
             # Evaluate syntax is evaluate(context, instance or class, *args)
             # If we have no instance or class (since we have no fragment), we pass Object
             # By convention, our callables should return an array of all possible
-            # representers when we pass the :all_sub_representers => true option
+            # representers when we pass the all_sub_representers: true option
             instance = attr[:instance].evaluate(representer, {}) rescue nil
             klass = attr[:class].evaluate(representer, {}) rescue Object
-            decorators = [attr[:extend].evaluate(representer, instance || klass,
-              :all_sub_representers => true)].flatten.compact rescue []
+            decorators = [attr[:extend].evaluate(
+              representer, instance || klass, all_sub_representers: true
+            )].flatten.compact rescue []
 
             # Count the representers
             include_oneof = decorators.length > 1

@@ -15,4 +15,4 @@ gem 'doorkeeper', '>= 0.5'
 # your gem to rubygems.org.
 
 # To use debugger
-# gem 'debugger'
+gem 'byebug'
