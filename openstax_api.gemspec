@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*']
 
   s.add_dependency 'rails', '>= 3.1'
-  s.add_dependency 'representable', '>= 2.0', '< 4.0'
+  s.add_dependency 'representable', '>= 2.4', '< 4.0'
   s.add_dependency 'roar', '>= 1.0'
   s.add_dependency 'roar-rails', '>= 1.0'
   s.add_dependency 'doorkeeper', '>= 2.0'
