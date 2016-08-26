@@ -13,7 +13,7 @@ module OpenStax
         model_klass = relation.base_class
         OSU::AccessPolicy.require_action_allowed!(:index, current_api_user, model_klass)
 
-        represent_with_options = options.merge(represent_with: represent_with)
+        represent_with_options = { user_options: options }.merge(represent_with: represent_with)
 
         relation.each do |item|
           # Must be able to read each record
@@ -23,11 +23,11 @@ module OpenStax
         respond_with(Lev::Outputs.new(items: relation), represent_with_options)
       end
 
-      def standard_search(model, routine, represent_with, options={})
+      def standard_search(klass, routine, represent_with, options={})
         user = current_api_user
-        OSU::AccessPolicy.require_action_allowed!(:search, user, model)
+        OSU::AccessPolicy.require_action_allowed!(:search, user, klass)
 
-        represent_with_options = options.merge(represent_with: represent_with)
+        represent_with_options = { user_options: options }.merge(represent_with: represent_with)
 
         result = routine.call(params, options)
         return render_api_errors(result.errors) if result.errors.any?
@@ -42,7 +42,7 @@ module OpenStax
 
       def standard_create(model, represent_with=nil, options={})
         create_options = { status: :created, location: nil }
-        represent_with_options = options.merge(represent_with: represent_with)
+        represent_with_options = { user_options: options }.merge(represent_with: represent_with)
 
         model.class.transaction do
           consume!(model, represent_with_options.dup)
@@ -70,7 +70,7 @@ module OpenStax
       def standard_read(model, represent_with=nil, use_timestamp_for_cache=false, options={})
         OSU::AccessPolicy.require_action_allowed!(:read, current_api_user, model)
 
-        represent_with_options = options.merge(represent_with: represent_with)
+        represent_with_options = { user_options: options }.merge(represent_with: represent_with)
 
         respond_with model, represent_with_options \
           if !use_timestamp_for_cache || stale?(model, template: false)
@@ -81,7 +81,7 @@ module OpenStax
         OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
 
         responder_options = { responder: ResponderWithPutPatchDeleteContent }
-        represent_with_options = options.merge(represent_with: represent_with)
+        represent_with_options = { user_options: options }.merge(represent_with: represent_with)
 
         model.with_lock do
           consume!(model, represent_with_options.dup)
@@ -105,7 +105,7 @@ module OpenStax
           if model.respond_to?(:deleted?) && model.deleted?
 
         responder_options = { responder: ResponderWithPutPatchDeleteContent }
-        represent_with_options = options.merge(represent_with: represent_with)
+        represent_with_options = { user_options: options }.merge(represent_with: represent_with)
 
         model.with_lock do
           if model.destroy
@@ -127,7 +127,8 @@ module OpenStax
         recursive = options.has_key?(:recursive) ? options[:recursive] : true
 
         responder_options = { responder: ResponderWithPutPatchDeleteContent }
-        represent_with_options = options.except(:recursive).merge(represent_with: represent_with)
+        represent_with_options = { user_options: options.except(:recursive) }
+                                     .merge(represent_with: represent_with)
 
         model.with_lock do
           if model.restore(recursive: recursive)
