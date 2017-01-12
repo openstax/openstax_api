@@ -168,7 +168,6 @@ module OpenStax
             expect(response.headers['Access-Control-Allow-Origin']).to eq ''
           end
 
-
         end
 
       end
