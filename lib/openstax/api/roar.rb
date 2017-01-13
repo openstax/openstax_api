@@ -145,6 +145,8 @@ module OpenStax
       end
 
       def render_api_errors(errors, status = :unprocessable_entity)
+        return if errors.blank?
+
         hash = { status: Rack::Utils.status_code(status) }
 
         case errors

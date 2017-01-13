@@ -18,6 +18,27 @@ module OpenStax
           expect(controller).to respond_to(:standard_sort)
           expect(controller).to respond_to(:render_api_errors)
         end
+
+        context 'render_api_errors' do
+          it 'returns nil if errors is nil' do
+            expect(controller).not_to receive(:render)
+            expect(controller.render_api_errors(nil)).to be_nil
+          end
+
+          it 'returns nil if errors is empty' do
+            expect(controller).not_to receive(:render)
+            expect(controller.render_api_errors([])).to be_nil
+            expect(controller.render_api_errors({})).to be_nil
+          end
+
+          it 'returns the rendered response if there are errors' do
+            expect(controller).to receive(:render) do |options|
+              expect(options[:json]).to eq({ status: 422, errors: [{code: :error}] })
+              expect(options[:status]).to eq :unprocessable_entity
+            end
+            controller.render_api_errors(code: :error)
+          end
+        end
       end
     end
   end
