@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'representable', '>= 2.4', '< 4.0'
   s.add_dependency 'roar', '>= 1.0'
   s.add_dependency 'roar-rails', '>= 1.0'
+  s.add_dependency 'uber', '< 0.1.0'
   s.add_dependency 'doorkeeper', '>= 2.0'
   s.add_dependency 'exception_notification', '>= 4.0'
   s.add_dependency 'openstax_utilities', '>= 4.2.0'
