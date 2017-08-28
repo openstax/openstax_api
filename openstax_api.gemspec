@@ -34,4 +34,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'faker'
   s.add_development_dependency 'squeel'
   s.add_development_dependency 'multi_json'
+  s.add_development_dependency 'byebug'
 end
