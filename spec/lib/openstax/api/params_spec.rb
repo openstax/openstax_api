@@ -8,6 +8,12 @@ module OpenStax
       let(:params) { {a: '1', b: 2, c: nil, d: '', e: '♥', f: true} }
       let(:signed) { described_class.sign(params: params, secret: 'secret') }
 
+      it 'disallows blank secrets' do
+        expect{
+          described_class.sign(params: {}, secret: nil)
+        }.to raise_error(StandardError)
+      end
+
       it 'signs and verifies' do
         expect(signed[:timestamp]).not_to be_blank
         expect(signed[:signature]).not_to be_blank

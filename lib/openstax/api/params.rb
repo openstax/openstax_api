@@ -5,6 +5,7 @@ module OpenStax
       extend self
 
       def sign(params:, secret:, algorithm: 'sha256')
+        raise "`secret` cannot be blank" if secret.blank?
         local_params = params.merge(timestamp: Time.now.to_i)
 
         stringified_params = normalize(local_params)
