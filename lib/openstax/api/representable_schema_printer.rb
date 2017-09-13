@@ -44,7 +44,9 @@ module OpenStax
 
         representer.representable_attrs.each do |attr|
           # Handle some common attributes (as, schema_info, required)
-          name = attr[:as].blank? ? attr[:name] : attr[:as].evaluate(representer) rescue attr[:name]
+          name = attr[:as].blank? ?
+                   attr[:name] :
+                   attr[:as].evaluate(representer) rescue attr[:as].call rescue attr[:name]
           schema_info = attr[:schema_info] || {}
 
           schema[:required].push(name.to_sym) if schema_info[:required]
