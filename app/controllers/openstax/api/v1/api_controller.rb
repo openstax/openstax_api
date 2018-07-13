@@ -13,32 +13,37 @@ module OpenStax
         respond_to :json
 
         # after_filters are in place to make sure certain things are set how we
-        # want even if something else goes on during the request.  These filters
-        # are also paired with before_filters in case an exception prevents
+        # want even if something else goes on during the request.  These actions
+        # are also paired with before_actions in case an exception prevents
         # normal action completion.
 
         # Always force JSON requests and send the Date header in the response
-        before_filter :force_json_content_type
-        before_filter :set_date_header
-        after_filter :set_date_header
+        before_action :force_json_content_type
+        before_action :set_date_header
+        after_action :set_date_header
 
         # Doorkeeper is used only if a token is present
         # Access policies should be used to limit access to anonymous users
-        before_filter :doorkeeper_authorize!, if: :token_user?
+        before_action :doorkeeper_authorize!, if: :token_user?
 
         # Except for users logged in via a cookie, we can disable CSRF protection and enable CORS
-        skip_before_filter :verify_authenticity_token, unless: :local_session_user?
-        skip_before_filter :authenticate_user!, only: :options
-        skip_before_filter :verify_authenticity_token, only: :options
+        skip_before_action :verify_authenticity_token, unless: :local_session_user?
+        skip_before_action :authenticate_user!, only: :options, raise: false
+        skip_before_action :verify_authenticity_token, only: :options
 
-        before_filter :maybe_set_cors_headers
-        after_filter  :maybe_set_cors_headers
+        before_action :maybe_set_cors_headers
+        after_action  :maybe_set_cors_headers
 
         # Keep old current_user method so we can use it
         alias_method :current_session_user, OpenStax::Api.configuration.current_user_method
 
         # Ensure we will never again confuse human users and api users
         undef_method OpenStax::Api.configuration.current_user_method
+
+        # intended to be overridden by parent
+        def authenticate_user!
+          throw(:abort)
+        end
 
         # Always return an ApiUser
         def current_api_user
