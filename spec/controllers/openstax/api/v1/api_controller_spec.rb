@@ -5,8 +5,8 @@ module OpenStax
     module V1
       describe ApiController do
 
-        let!(:user)                     { FactoryGirl.create :user }
-        let!(:user_2)                   { FactoryGirl.create :user }
+        let!(:user)                     { FactoryBot.create :user }
+        let!(:user_2)                   { FactoryBot.create :user }
         let!(:application)              { double('Doorkeeper::Application') }
         let!(:doorkeeper_token)         { double('Doorkeeper::AccessToken') }
         let!(:non_doorkeeper_user_proc) { lambda { user } }

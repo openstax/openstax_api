@@ -3,7 +3,7 @@ require 'rails_helper'
 module OpenStax
   module Api
     describe ApiUser do
-      let(:user) { FactoryGirl.create :user }
+      let(:user) { FactoryBot.create :user }
       let(:application) { double('Doorkeeper::Application') }
       let(:doorkeeper_token) { double('Doorkeeper::AccessToken') }
       let(:non_doorkeeper_user_proc) { lambda { user } }

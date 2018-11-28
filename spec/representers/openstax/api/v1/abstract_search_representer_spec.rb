@@ -7,18 +7,18 @@ module OpenStax
 
         before(:all) do
           100.times do
-            FactoryGirl.create(:user)
+            FactoryBot.create(:user)
           end
 
           User.where{name.like "% doe%"}.delete_all
 
-          john_doe = FactoryGirl.create :user, name: "John Doe",
+          john_doe = FactoryBot.create :user, name: "John Doe",
                                                username: "doejohn",
                                                email: "john@doe.com"
-          jane_doe = FactoryGirl.create :user, name: "Jane Doe",
+          jane_doe = FactoryBot.create :user, name: "Jane Doe",
                                                username: "doejane",
                                                email: "jane@doe.com"
-          jack_doe = FactoryGirl.create :user, name: "Jack Doe",
+          jack_doe = FactoryBot.create :user, name: "Jack Doe",
                                                username: "doejack",
                                                email: "jack@doe.com"
 
