@@ -14,8 +14,7 @@ Gem::Specification.new do |s|
   s.summary     = 'API utilities for OpenStax products and tools.'
   s.description = "Provides models, controllers and libraries that help OpenStax products define API's for user applications."
 
-  s.files = Dir['{app,lib,config}/**/*.rb'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
-  s.test_files = Dir['spec/**/*.rb']
+  s.files = Dir['{app,lib,config}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
 
   s.add_dependency 'rails', '>= 3.1', '< 5.0'
   s.add_dependency 'representable', '>= 2.4', '< 4.0'
