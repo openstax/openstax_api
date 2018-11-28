@@ -24,6 +24,7 @@ module OpenStax
       end
 
       def standard_search(klass, routine, represent_with, options={})
+        search_options = { location: nil }
         user = current_api_user
         OSU::AccessPolicy.require_action_allowed!(:search, user, klass)
 
@@ -33,11 +34,11 @@ module OpenStax
         return render_api_errors(result.errors) if result.errors.any?
 
         outputs = result.outputs
-        outputs[:items].each do |item|
+        outputs.items.each do |item|
           OSU::AccessPolicy.require_action_allowed!(:read, user, item)
         end
 
-        respond_with outputs, represent_with_options
+        respond_with outputs, search_options.merge(represent_with_options)
       end
 
       def standard_create(model, represent_with=nil, options={})
