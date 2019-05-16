@@ -12,7 +12,7 @@ module OpenStax
 
         respond_to :json
 
-        # after_filters are in place to make sure certain things are set how we
+        # after_actions are in place to make sure certain things are set how we
         # want even if something else goes on during the request.  These actions
         # are also paired with before_actions in case an exception prevents
         # normal action completion.
@@ -28,8 +28,8 @@ module OpenStax
 
         # Except for users logged in via a cookie, we can disable CSRF protection and enable CORS
         skip_before_action :verify_authenticity_token, unless: :local_session_user?
-        skip_before_action :authenticate_user!, only: :options, raise: false
         skip_before_action :verify_authenticity_token, only: :options
+        skip_before_action :authenticate_user!, only: :options, raise: false
 
         before_action :maybe_set_cors_headers
         after_action  :maybe_set_cors_headers
