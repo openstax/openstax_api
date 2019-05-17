@@ -40,22 +40,24 @@ module OpenStax
       def api_request(type, action, doorkeeper_token = nil, args={})
         raise IllegalArgument unless [:head, :get, :post, :patch, :put, :delete].include?(type)
 
-        header = is_a_controller_spec? ? request.env : {}
+        headers = is_a_controller_spec? ? request.headers : {}
 
         # Add the doorkeeper token info
-        header['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
+        headers['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
           if doorkeeper_token
 
         # Select the version of the API based on the spec metadata and populate the accept header
         version_string = self.class.metadata[:version].try(:to_s)
         raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" \
           if version_string.nil?
-        header['HTTP_ACCEPT'] = "application/vnd.openstax.#{version_string}"
+        headers['HTTP_ACCEPT'] = "application/vnd.openstax.#{version_string}"
 
         # Set the data format
         args[:params] ||= {}
         args[:params][:format] = 'json' unless args[:params].is_a?(String)
-        header['CONTENT_TYPE'] = 'application/json'
+        headers['CONTENT_TYPE'] = 'application/json'
+
+        args[:headers] = headers unless is_a_controller_spec?
 
         # Convert the request body to JSON if needed
         args[:body] = args[:body].to_json if args[:body] && !args[:body].is_a?(String)
