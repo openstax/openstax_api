@@ -42,25 +42,26 @@ module OpenStax
 
         headers = is_a_controller_spec? ? request.headers : {}
 
-        # Add the doorkeeper token info
-        headers['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
-          if doorkeeper_token
-
         # Select the version of the API based on the spec metadata and populate the accept header
         version_string = self.class.metadata[:version].try(:to_s)
         raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" \
           if version_string.nil?
         headers['HTTP_ACCEPT'] = "application/vnd.openstax.#{version_string}"
 
-        # Set the data format
-        args[:params] ||= {}
-        args[:params][:format] = 'json' unless args[:params].is_a?(String)
+        # Add the doorkeeper token header
+        headers['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
+          if doorkeeper_token
+
         headers['CONTENT_TYPE'] = 'application/json'
 
-        args[:headers] = headers unless is_a_controller_spec?
-
-        # Convert the request body to JSON if needed
-        args[:body] = args[:body].to_json if args[:body] && !args[:body].is_a?(String)
+        if is_a_controller_spec?
+          request.headers.merge! headers
+          args[:format] = :json
+          # Convert the request body to JSON if needed
+          args[:body] = args[:body].to_json unless args[:body].nil? || args[:body].is_a?(String)
+        else
+          args[:headers] = headers
+        end
 
         # If these helpers are used from a request spec, action can
         # be a URL fragment string -- in such a case, prepend "/api"
