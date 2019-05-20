@@ -1,11 +1,15 @@
 # Provides API-specific HTTP request methods
 #
-# The args at the end of each request is interpreted a hash that can contain
-# keys for:
-#   :params  -- a hash of parameters
-#   :body    -- a JSON string (if not a String, to_json will be called on it)
-#   :session -- whatever built-in request methods expect
-#   :flash   -- whatever built-in request methods expect
+# action is a symbol (controller specs) OR a relative url (request specs)
+#
+# doorkeeper_token is a Doorkeeper::AccessToken or nil
+#
+# args are a hash that can contain the following keys:
+#   :params          -- a hash of parameters (controller specs) OR a json string (request specs)
+#   :body            -- a JSON string (controller specs only)
+#   :format          -- always set to :json for API calls
+#   :session, :flash -- hashes (controller specs)
+#   :headers, :env   -- hashes (request specs)
 #
 # Helpful documentation:
 #  https://github.com/rails/rails/blob/3-2-stable/actionpack/lib/action_controller/test_case.rb
