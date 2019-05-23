@@ -6,11 +6,11 @@ module Api
     class DummyController < OpenStax::Api::V1::ApiController
 
       rescue_from DummyControllerError do |e|
-        render nothing: true, status: 500
+        head :internal_server_error
       end
 
       def dummy
-        head(:ok)
+        head :ok
       end
 
       def explode

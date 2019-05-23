@@ -5,7 +5,6 @@ require File.expand_path("../dummy/config/environment", __FILE__)
 require 'rspec/rails'
 require 'factory_bot_rails'
 require 'faker'
-require 'squeel'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 
