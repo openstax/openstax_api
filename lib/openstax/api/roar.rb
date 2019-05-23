@@ -110,7 +110,7 @@ module OpenStax
 
         model.with_lock do
           if model.destroy
-            model.clear_association_cache
+            model.send :clear_association_cache
             respond_with model, responder_options.merge(represent_with_options)
           else
             render_api_errors(model.errors)
@@ -133,7 +133,7 @@ module OpenStax
 
         model.with_lock do
           if model.restore(recursive: recursive)
-            model.clear_association_cache
+            model.send :clear_association_cache
             respond_with model, responder_options.merge(represent_with_options)
           else
             render_api_errors(model.errors)

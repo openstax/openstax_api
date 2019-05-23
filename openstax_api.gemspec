@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,lib,config}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
 
-  s.add_dependency 'rails', '>= 3.1', '< 5.0'
+  s.add_dependency 'rails', '>= 3.1'
   s.add_dependency 'representable', '>= 2.4', '< 4.0'
   s.add_dependency 'roar', '>= 1.0'
   s.add_dependency 'roar-rails', '>= 1.0'
@@ -31,6 +31,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'factory_bot_rails'
   s.add_development_dependency 'faker'
-  s.add_development_dependency 'squeel'
   s.add_development_dependency 'multi_json'
 end

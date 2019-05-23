@@ -6,21 +6,19 @@ module OpenStax
       describe AbstractSearchRepresenter do
 
         before(:all) do
-          100.times do
-            FactoryBot.create(:user)
-          end
+          100.times { FactoryBot.create(:user) }
 
-          User.where{name.like "% doe%"}.delete_all
+          User.where(User.arel_table[:name].matches("% doe%")).delete_all
 
           john_doe = FactoryBot.create :user, name: "John Doe",
-                                               username: "doejohn",
-                                               email: "john@doe.com"
+                                              username: "doejohn",
+                                              email: "john@doe.com"
           jane_doe = FactoryBot.create :user, name: "Jane Doe",
-                                               username: "doejane",
-                                               email: "jane@doe.com"
+                                              username: "doejane",
+                                              email: "jane@doe.com"
           jack_doe = FactoryBot.create :user, name: "Jack Doe",
-                                               username: "doejack",
-                                               email: "jack@doe.com"
+                                              username: "doejack",
+                                              email: "jack@doe.com"
 
           @john_hash = JSON.parse(UserRepresenter.new(john_doe).to_json)
           @jane_hash = JSON.parse(UserRepresenter.new(jane_doe).to_json)

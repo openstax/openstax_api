@@ -1,11 +1,15 @@
 # Provides API-specific HTTP request methods
 #
-# The args at the end of each request is interpreted a hash that can contain
-# keys for:
-#   :raw_post_data -- a JSON string (if a Hash provided, to_json will be called on it)
-#   :parameters -- a hash of parameters
-#   :session -- whatever built-in request methods expect
-#   :flash -- whatever built-in request methods expect
+# action is a symbol (controller specs) OR a relative url (request specs)
+#
+# doorkeeper_token is a Doorkeeper::AccessToken or nil
+#
+# args are a hash that can contain the following keys:
+#   :params          -- a hash of parameters (controller specs) OR a json string (request specs)
+#   :body            -- a JSON string (controller specs only)
+#   :format          -- always set to :json for API calls
+#   :session, :flash -- hashes (controller specs)
+#   :headers, :env   -- hashes (request specs)
 #
 # Helpful documentation:
 #  https://github.com/rails/rails/blob/3-2-stable/actionpack/lib/action_controller/test_case.rb
@@ -13,56 +17,55 @@
 module OpenStax
   module Api
     module RSpecHelpers
-
-      def api_get(action, doorkeeper_token, args={})
+      def api_get(action, doorkeeper_token = nil, args={})
         api_request(:get, action, doorkeeper_token, args)
       end
 
-      def api_put(action, doorkeeper_token, args={})
+      def api_put(action, doorkeeper_token = nil, args={})
         api_request(:put, action, doorkeeper_token, args)
       end
 
-      def api_post(action, doorkeeper_token, args={})
+      def api_post(action, doorkeeper_token = nil, args={})
         api_request(:post, action, doorkeeper_token, args)
       end
 
-      def api_delete(action, doorkeeper_token, args={})
+      def api_delete(action, doorkeeper_token = nil, args={})
         api_request(:delete, action, doorkeeper_token, args)
       end
 
-      def api_patch(action, doorkeeper_token, args={}) 
+      def api_patch(action, doorkeeper_token = nil, args={})
         api_request(:patch, action, doorkeeper_token, args)
       end
 
-      def api_head(action, doorkeeper_token, args={})
+      def api_head(action, doorkeeper_token = nil, args={})
         api_request(:head, action, doorkeeper_token, args)
       end
 
-      def api_request(type, action, doorkeeper_token, args={})
-        raise IllegalArgument if ![:get, :post, :put, :delete, :patch, :head].include?(type)
+      def api_request(type, action, doorkeeper_token = nil, args={})
+        raise IllegalArgument unless [:head, :get, :post, :patch, :put, :delete].include?(type)
 
-        header = is_a_controller_spec? ? request.env : {}
-
-        # Add the doorkeeper token info
-        header['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
-          if doorkeeper_token
+        headers = is_a_controller_spec? ? request.headers : {}
 
         # Select the version of the API based on the spec metadata and populate the accept header
         version_string = self.class.metadata[:version].try(:to_s)
-        raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" if version_string.nil?
-        header['HTTP_ACCEPT'] = "application/vnd.openstax.#{version_string}"
+        raise ArgumentError, "Top-level 'describe' metadata must include a value for ':version'" \
+          if version_string.nil?
+        headers['HTTP_ACCEPT'] = "application/vnd.openstax.#{version_string}"
 
-        # Set the raw post data in the request, converting to JSON if needed
-        if args[:raw_post_data]
-          header['RAW_POST_DATA'] = args[:raw_post_data].is_a?(Hash) ? 
-                                      args[:raw_post_data].to_json : 
-                                      args[:raw_post_data]
+        # Add the doorkeeper token header
+        headers['HTTP_AUTHORIZATION'] = "Bearer #{doorkeeper_token.token}" \
+          if doorkeeper_token
+
+        headers['CONTENT_TYPE'] = 'application/json'
+
+        if is_a_controller_spec?
+          request.headers.merge! headers
+          args[:format] = :json
+          # Convert the request body to JSON if needed
+          args[:body] = args[:body].to_json unless args[:body].nil? || args[:body].is_a?(String)
+        else
+          args[:headers] = headers
         end
-
-        # Set the data format
-        args[:parameters] ||= {}
-        args[:parameters][:format] = 'json'
-        header['CONTENT_TYPE'] = 'application/json'
 
         # If these helpers are used from a request spec, action can
         # be a URL fragment string -- in such a case, prepend "/api"
@@ -73,11 +76,7 @@ module OpenStax
           action = "/api#{action}" if !action.starts_with?("/api/")
         end
 
-        if is_a_controller_spec?
-          send(type, action, args[:parameters], args[:session], args[:flash])
-        else
-          send(type, action, args[:parameters].to_json, header)
-        end
+        send type, action, args
       end
 
       private
@@ -85,7 +84,6 @@ module OpenStax
       def is_a_controller_spec?
         self.class.metadata[:type] == :controller
       end
-
     end
   end
 end
