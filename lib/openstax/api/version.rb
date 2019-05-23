@@ -1,5 +1,5 @@
 module OpenStax
   module Api
-    VERSION = "8.3.2"
+    VERSION = '9.0.0'
   end
 end
