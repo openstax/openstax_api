@@ -71,9 +71,10 @@ module OpenStax
         # be a URL fragment string -- in such a case, prepend "/api"
         # to the front of the URL as a convenience to callers
 
-        if action.is_a? String
-          action = "/#{action}" if !action.starts_with?("/")
-          action = "/api#{action}" if !action.starts_with?("/api/")
+        action = action.to_s unless is_a_controller_spec?
+        if action.is_a?(String) && !action.include?('://')
+          action = "/#{action}" if !action.starts_with?('/')
+          action = "/api#{action}" if !action.starts_with?('/api/')
         end
 
         send type, action, args
