@@ -107,6 +107,7 @@ module OpenStax
         model.with_lock do
           if model.destroy
             model.send :clear_association_cache
+            yield model if block_given?
             respond_with model, responder_options.merge(represent_with_options)
           else
             render_api_errors(model.errors)
@@ -131,6 +132,7 @@ module OpenStax
         model.with_lock do
           if model.restore(recursive: recursive)
             model.send :clear_association_cache
+            yield model if block_given?
             respond_with model, responder_options.merge(represent_with_options)
           else
             render_api_errors(model.errors)
