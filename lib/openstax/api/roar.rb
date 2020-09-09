@@ -129,7 +129,7 @@ module OpenStax
           user_options: options.except(:recursive), represent_with: represent_with
         }
 
-        model.with_lock do
+        model.reload(lock: true) do
           if model.restore(recursive: recursive)
             model.send :clear_association_cache
             yield model if block_given?
