@@ -80,7 +80,9 @@ module OpenStax
         responder_options = { responder: ResponderWithPutPatchDeleteContent }
         represent_with_options = { user_options: options, represent_with: represent_with }
 
-        model.with_lock do
+        model.transaction do
+          model.reload lock: true
+
           consume!(model, represent_with_options.dup)
           yield model if block_given?
           OSU::AccessPolicy.require_action_allowed!(:update, current_api_user, model)
@@ -104,7 +106,9 @@ module OpenStax
         responder_options = { responder: ResponderWithPutPatchDeleteContent }
         represent_with_options = { user_options: options, represent_with: represent_with }
 
-        model.with_lock do
+        model.transaction do
+          model.reload lock: true
+
           if model.destroy
             model.send :clear_association_cache
             yield model if block_given?
@@ -129,7 +133,9 @@ module OpenStax
           user_options: options.except(:recursive), represent_with: represent_with
         }
 
-        model.reload(lock: true) do
+        model.transaction do
+          model.reload lock: true
+
           if model.restore(recursive: recursive)
             model.send :clear_association_cache
             yield model if block_given?
