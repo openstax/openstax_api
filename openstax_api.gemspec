@@ -16,18 +16,18 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,lib,config}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
 
-  s.add_dependency 'rails', '>= 3.1', '< 6.0'
-  s.add_dependency 'representable', '>= 2.4', '< 4.0'
-  s.add_dependency 'roar', '>= 1.0'
-  s.add_dependency 'roar-rails', '>= 1.0'
-  s.add_dependency 'uber', '< 0.1.0'
-  s.add_dependency 'doorkeeper', '>= 2.0'
-  s.add_dependency 'exception_notification', '>= 4.0'
-  s.add_dependency 'openstax_utilities', '>= 4.2.0'
-  s.add_dependency 'lev', '>= 1.0.0'
+  s.add_dependency 'rails', '~> 5.2'
+  s.add_dependency 'representable'
+  s.add_dependency 'roar'
+  s.add_dependency 'roar-rails'
+  s.add_dependency 'uber'
+  s.add_dependency 'doorkeeper'
+  s.add_dependency 'exception_notification'
+  s.add_dependency 'openstax_utilities'
+  s.add_dependency 'lev'
   s.add_dependency 'responders'
 
-  s.add_development_dependency 'sprockets', '< 4.0'
+  s.add_development_dependency 'sprockets'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'factory_bot_rails'
