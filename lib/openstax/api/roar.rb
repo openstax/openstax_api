@@ -151,7 +151,10 @@ module OpenStax
 
         case errors
         when ActiveModel::Errors, Lev::BetterActiveModelErrors
-          hash[:errors] = errors.map do |attribute, message|
+          hash[:errors] = errors.map do |error|
+            attribute = error.attribute
+            message = error.message
+
             {
               code: "#{attribute.to_s}_#{message.to_s.gsub(/[\s-]/, '_').gsub(/[^\w]/, '')}",
               message: errors.full_message(attribute, message)
@@ -163,8 +166,8 @@ module OpenStax
           end
         else
           hash[:errors] = [errors].flatten.map do |error|
-            error.is_a?(Hash) ? error : { code: error.to_s.underscore,
-                                          message: error.to_s.humanize }
+            error.is_a?(Hash) ? error :
+                                { code: error.to_s.underscore, message: error.to_s.humanize }
           end
         end
 

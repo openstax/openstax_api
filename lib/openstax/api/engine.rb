@@ -13,8 +13,6 @@ module OpenStax
     class Engine < ::Rails::Engine
       isolate_namespace OpenStax::Api
 
-      config.autoload_paths += Dir[config.root.join('app', 'representers', '{**}')]
-
       config.generators do |g|
         g.test_framework      :rspec,        fixture: false
         g.fixture_replacement :factory_bot, dir: 'spec/factories'
