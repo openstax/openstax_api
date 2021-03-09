@@ -1,7 +1,7 @@
 # openstax_api
 
 [![Gem Version](https://badge.fury.io/rb/openstax_api.svg)](http://badge.fury.io/rb/openstax_api)
-[![Build Status](https://travis-ci.org/openstax/openstax_api.svg?branch=master)](https://travis-ci.org/openstax/openstax_api)
+[![Tests](https://github.com/openstax/openstax_api/workflows/Tests/badge.svg)](https://github.com/openstax/openstax_api/actions?query=workflow:Tests)
 [![Code Climate](https://codeclimate.com/github/openstax/openstax_api/badges/gpa.svg)](https://codeclimate.com/github/openstax/openstax_api)
 
 API utilities for OpenStax products and tools.
@@ -79,4 +79,3 @@ From the gem's main folder, run `bundle`, `rake db:migrate` and then `rake` to r
 5. Commit your changes (`git commit -am 'Add some feature'`)
 6. Push to the branch (`git push origin my-new-feature`)
 7. Create new pull request
-
