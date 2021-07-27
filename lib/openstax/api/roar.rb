@@ -150,7 +150,7 @@ module OpenStax
         hash = { status: Rack::Utils.status_code(status) }
 
         case errors
-        when ActiveModel::Errors, Lev::BetterActiveModelErrors
+        when ActiveModel::Errors
           hash[:errors] = errors.map do |error|
             attribute = error.attribute
             message = error.message
