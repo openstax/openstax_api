@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rails', '>= 5.2', '< 7'
   s.add_dependency 'representable'
   s.add_dependency 'roar'
-  s.add_dependency 'roar-rails'
+  s.add_dependency 'roar-rails', '~> 1.0'
   s.add_dependency 'uber'
   s.add_dependency 'doorkeeper'
   s.add_dependency 'exception_notification'
