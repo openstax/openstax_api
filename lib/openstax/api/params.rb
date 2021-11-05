@@ -1,3 +1,5 @@
+require 'addressable/uri'
+
 module OpenStax
   module Api
     module Params
@@ -44,7 +46,7 @@ module OpenStax
       end
 
       def _escape(string)
-        URI.escape(string, RESERVED_CHARACTERS)
+        Addressable::URI.escape_component(string, RESERVED_CHARACTERS)
       end
 
       # Normalize a +Hash+ of parameter values. Parameters are sorted by name, using lexicographical
