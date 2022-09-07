@@ -37,6 +37,8 @@ module OpenStax
           OSU::AccessPolicy.require_action_allowed!(:read, user, item)
         end
 
+        yield outputs if block_given?
+
         respond_with outputs, { status: :ok, location: nil }.merge(represent_with_options)
       end
 
