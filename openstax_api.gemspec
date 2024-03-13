@@ -28,8 +28,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'lev', '>= 12.0.1'
   s.add_dependency 'responders'
 
-  s.add_development_dependency 'sprockets'
-  s.add_development_dependency 'sprockets-rails'
   s.add_development_dependency 'listen'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'rspec-rails'
