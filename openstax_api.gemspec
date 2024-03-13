@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,lib,config}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.md']
 
-  s.add_dependency 'rails', '>= 5.2', '< 7'
+  s.add_dependency 'rails', '>= 6', '<= 8'
   s.add_dependency 'addressable'
   s.add_dependency 'representable'
   s.add_dependency 'roar'
@@ -25,10 +25,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'doorkeeper'
   s.add_dependency 'exception_notification'
   s.add_dependency 'openstax_utilities'
-  s.add_dependency 'lev', '>= 11'
+  s.add_dependency 'lev', '>= 12.0.1'
   s.add_dependency 'responders'
 
   s.add_development_dependency 'sprockets'
+  s.add_development_dependency 'sprockets-rails'
   s.add_development_dependency 'listen'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'rspec-rails'
