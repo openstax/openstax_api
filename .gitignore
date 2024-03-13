@@ -11,3 +11,6 @@ Gemfile.lock
 
 # Finder
 .DS_Store
+
+# IDE configs
+.idea/
