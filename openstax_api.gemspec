@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'doorkeeper'
   s.add_dependency 'exception_notification'
   s.add_dependency 'openstax_utilities'
-  s.add_dependency 'lev', '>= 12.0.1'
+  s.add_dependency 'lev', '>= 12.1.0'
   s.add_dependency 'responders'
 
   s.add_development_dependency 'listen'
