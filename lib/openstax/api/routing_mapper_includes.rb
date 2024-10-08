@@ -24,4 +24,6 @@ module OpenStax
   end
 end
 
-ActionDispatch::Routing::Mapper.send :include, OpenStax::Api::RoutingMapperIncludes
+OpenStax::Api::Engine.config.after_initialize do
+  ActionDispatch::Routing::Mapper.send :include, OpenStax::Api::RoutingMapperIncludes
+end
