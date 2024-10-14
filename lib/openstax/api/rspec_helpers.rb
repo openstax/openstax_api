@@ -77,7 +77,7 @@ module OpenStax
           action = "/api#{action}" if !action.starts_with?('/api/')
         end
 
-        send type, action, args
+        send type, action, **args
       end
 
       private
