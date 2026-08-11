@@ -108,7 +108,11 @@ module OpenStax
 
         model.with_lock do
           if model.destroy
-            model.send :clear_association_cache
+            # Rails 7.0 dropped the `clear_association_cache` private method
+            # (previously `@association_cache.clear if persisted?`); clear
+            # the still-present ivar directly so association reads after
+            # destroy re-query instead of returning stale cached records.
+            model.instance_variable_get(:@association_cache)&.clear
             yield model if block_given?
             respond_with model, responder_options.merge(represent_with_options)
           else
